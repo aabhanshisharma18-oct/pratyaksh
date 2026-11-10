@@ -1,0 +1,4 @@
+-r requirements.txt
+efficientnet-pytorch==0.7.1
+gdown==6.5.1
+opencv-python-headless>=4.10,<5

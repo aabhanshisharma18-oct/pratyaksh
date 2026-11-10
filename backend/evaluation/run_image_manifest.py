@@ -15,6 +15,12 @@ from pathlib import Path
 from PIL import Image, ImageOps
 
 from detector import ImageDetector, MODEL_ID, REVISION
+from face_forgery_detector import (
+    FaceForgeryDetector,
+    MODEL_ID as FACE_MODEL_ID,
+    MODEL_VERSION as FACE_MODEL_VERSION,
+    PREPROCESSING_VERSION as FACE_PREPROCESSING_VERSION,
+)
 from evaluation.evaluate_predictions import load_json, validate_manifest
 
 MAX_BYTES = 15 * 1024 * 1024
@@ -22,7 +28,15 @@ Image.MAX_IMAGE_PIXELS = 20_000_000
 
 
 def run_samples(
-    samples: list[dict], base_dir: Path, split: str, detector: ImageDetector
+    samples: list[dict],
+    base_dir: Path,
+    split: str,
+    detector,
+    *,
+    score_key: str = "deepfake_score",
+    model_id: str = MODEL_ID,
+    model_revision: str = REVISION,
+    preprocessing_version: str = "ufd-center-crop-224-clip-normalize-v1",
 ) -> list[dict]:
     records = []
     for sample in samples:
@@ -32,9 +46,9 @@ def run_samples(
         record = {
             "sample_id": sample["sample_id"],
             "execution_status": "failed",
-            "model_id": MODEL_ID,
-            "model_revision": REVISION,
-            "preprocessing_version": "ufd-center-crop-224-clip-normalize-v1",
+            "model_id": model_id,
+            "model_revision": model_revision,
+            "preprocessing_version": preprocessing_version,
         }
         try:
             path = (base_dir / sample["path"]).resolve()
@@ -54,7 +68,9 @@ def run_samples(
             if min(image.size) < 32:
                 raise ValueError("image must be at least 32 pixels in each dimension")
             prediction = detector.predict(image)
-            score = prediction.get("deepfake_score")
+            if prediction.get("execution_status") == "no_face":
+                raise ValueError("no face was detected")
+            score = prediction.get(score_key)
             if (
                 not isinstance(score, (int, float))
                 or isinstance(score, bool)
@@ -81,16 +97,43 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--split", choices=("development", "test"), required=True)
+    parser.add_argument(
+        "--candidate",
+        choices=("whole_image", "face_forgery"),
+        default="whole_image",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
     samples = validate_manifest(load_json(args.manifest))
-    records = run_samples(samples, args.manifest.parent, args.split, ImageDetector())
+    if args.candidate == "face_forgery":
+        detector = FaceForgeryDetector()
+        options = {
+            "score_key": "face_forgery_score",
+            "model_id": FACE_MODEL_ID,
+            "model_revision": FACE_MODEL_VERSION,
+            "preprocessing_version": FACE_PREPROCESSING_VERSION,
+        }
+    else:
+        detector = ImageDetector()
+        options = {}
+    records = run_samples(
+        samples, args.manifest.parent, args.split, detector, **options
+    )
     if not records:
         raise ValueError(f"manifest contains no {args.split} samples")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(records, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"split": args.split, "prediction_count": len(records)}, indent=2))
+    print(
+        json.dumps(
+            {
+                "candidate": args.candidate,
+                "split": args.split,
+                "prediction_count": len(records),
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

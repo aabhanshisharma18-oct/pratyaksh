@@ -15,6 +15,13 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from detector import ImageDetector, LIMITATIONS, MODEL_ID, REVISION, model_files_present
+from face_forgery_detector import (
+    FaceForgeryDetector,
+    LIMITATIONS as FACE_LIMITATIONS,
+    MODEL_ID as FACE_MODEL_ID,
+    MODEL_VERSION as FACE_MODEL_VERSION,
+    face_model_files_present,
+)
 from audio_probe import (
     AASISTProbe,
     AudioProbeError,
@@ -29,8 +36,9 @@ MAX_AUDIO_BYTES = 25 * 1024 * 1024
 Image.MAX_IMAGE_PIXELS = 20_000_000
 SLOTS = BoundedSemaphore(1)
 detector = ImageDetector()
+face_forgery_detector = FaceForgeryDetector()
 audio_probe = AASISTProbe()
-app = FastAPI(title="Pratyaksh D1", version="0.3.0")
+app = FastAPI(title="Pratyaksh D1", version="0.4.0")
 
 
 @app.get("/")
@@ -47,6 +55,8 @@ def health():
         "contract_version": "1.0",
         "detector_ready": detector.backbone is not None,
         "model_files_present": model_files_present(),
+        "face_forgery_ready": face_forgery_detector.classifier is not None,
+        "face_model_files_present": face_model_files_present(),
         "audio_probe_ready": audio_probe.model is not None,
         "audio_probe_files_present": audio_probe_files_present(),
     }
@@ -65,6 +75,15 @@ def capabilities():
             "candidate": MODEL_ID,
             "formats": ["JPEG", "PNG", "WEBP"],
             "max_bytes": MAX_BYTES,
+            "face_forgery": {
+                "implemented": True,
+                "loaded": face_forgery_detector.classifier is not None,
+                "model_files_present": face_model_files_present(),
+                "evaluated": False,
+                "selection_state": "research_candidate_unevaluated",
+                "candidate": FACE_MODEL_ID,
+                "license": "Noncommercial research use only",
+            },
         },
         "video": {"ready": False, "selection_state": "planned"},
         "audio": {
@@ -81,37 +100,42 @@ def capabilities():
     }
 
 
+def _decode_image_upload(file: UploadFile):
+    raw = file.file.read(MAX_BYTES + 1)
+    if not raw:
+        raise HTTPException(400, "Empty file")
+    if len(raw) > MAX_BYTES:
+        raise HTTPException(413, "Image exceeds 15 MiB")
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(raw)) as source:
+                if source.format not in {"JPEG", "PNG", "WEBP"}:
+                    raise HTTPException(415, "Only JPEG, PNG and WEBP are supported")
+                if getattr(source, "n_frames", 1) != 1:
+                    raise HTTPException(415, "Animated images are unsupported")
+                source.load()
+                image = ImageOps.exif_transpose(source).convert("RGB")
+    except (
+        UnidentifiedImageError,
+        OSError,
+        ValueError,
+        Image.DecompressionBombError,
+        Image.DecompressionBombWarning,
+    ):
+        raise HTTPException(422, "Image cannot be safely decoded or exceeds the pixel limit")
+    if min(image.size) < 32:
+        raise HTTPException(422, "Image must be at least 32 pixels in each dimension")
+    return raw, image
+
+
 @app.post("/api/d1/analyze-image")
 def analyze_image(file: UploadFile = File(...)):
     if not SLOTS.acquire(blocking=False):
         raise HTTPException(429, "An image is already being processed; try again shortly.")
     started = time.perf_counter()
     try:
-        raw = file.file.read(MAX_BYTES + 1)
-        if not raw:
-            raise HTTPException(400, "Empty file")
-        if len(raw) > MAX_BYTES:
-            raise HTTPException(413, "Image exceeds 15 MiB")
-        try:
-            with warnings.catch_warnings():
-                warnings.simplefilter("error", Image.DecompressionBombWarning)
-                with Image.open(io.BytesIO(raw)) as source:
-                    if source.format not in {"JPEG", "PNG", "WEBP"}:
-                        raise HTTPException(415, "Only JPEG, PNG and WEBP are supported")
-                    if getattr(source, "n_frames", 1) != 1:
-                        raise HTTPException(415, "Animated images are unsupported")
-                    source.load()
-                    image = ImageOps.exif_transpose(source).convert("RGB")
-        except (
-            UnidentifiedImageError,
-            OSError,
-            ValueError,
-            Image.DecompressionBombError,
-            Image.DecompressionBombWarning,
-        ):
-            raise HTTPException(422, "Image cannot be safely decoded or exceeds the pixel limit")
-        if min(image.size) < 32:
-            raise HTTPException(422, "Image must be at least 32 pixels in each dimension")
+        raw, image = _decode_image_upload(file)
         try:
             prediction = detector.predict(image)
         except (ImportError, FileNotFoundError, OSError, ValueError, KeyError):
@@ -169,6 +193,92 @@ def analyze_image(file: UploadFile = File(...)):
             },
             "threshold": None,
             "preprocessing_version": "ufd-center-crop-224-clip-normalize-v1",
+        }
+        destination = ROOT / "data" / "runs"
+        destination.mkdir(parents=True, exist_ok=True)
+        (destination / f"{run_id}.json").write_text(
+            json.dumps(response, indent=2), encoding="utf-8"
+        )
+        return response
+    finally:
+        file.file.close()
+        SLOTS.release()
+
+
+@app.post("/api/d1/analyze-face-forgery")
+def analyze_face_forgery(file: UploadFile = File(...)):
+    """Run the optional face-specific research candidate without a final verdict."""
+    if not SLOTS.acquire(blocking=False):
+        raise HTTPException(429, "A model is already being processed; try again shortly.")
+    started = time.perf_counter()
+    try:
+        raw, image = _decode_image_upload(file)
+        try:
+            prediction = face_forgery_detector.predict(image)
+        except (ImportError, FileNotFoundError, OSError, ValueError, KeyError):
+            raise HTTPException(
+                503,
+                "Face-forgery candidate unavailable. Install requirements-face-research.txt "
+                "and run setup_face_research_models.py with the licence acceptance flag.",
+            )
+        except Exception:
+            raise HTTPException(500, "Face-forgery inference failed; no score was produced.")
+
+        run_id = "RUN-" + uuid.uuid4().hex
+        score = prediction.get("face_forgery_score")
+        if prediction["execution_status"] == "completed":
+            if not isinstance(score, (int, float)) or not math.isfinite(score) or not 0 <= score <= 1:
+                raise HTTPException(500, "Face-forgery candidate returned an invalid score")
+            observation = (
+                f"Face-specific research candidate scored {prediction['face_count']} "
+                "detected face(s); project validation is required."
+            )
+        else:
+            score = None
+            observation = "No face was detected; no face-forgery score was produced."
+
+        response = {
+            "finding": {
+                "schema_version": "1.0",
+                "finding_id": "F-" + uuid.uuid4().hex,
+                "run_id": run_id,
+                "evidence_id": "LOCAL-" + uuid.uuid4().hex,
+                "category": "synthetic_media",
+                "execution_status": prediction["execution_status"],
+                "result": "inconclusive",
+                "observation": observation,
+                "method": FACE_MODEL_ID,
+                "method_version": FACE_MODEL_VERSION,
+                "scope": "YuNet-detected face crops; maximum face signal reported",
+                "score": (
+                    {
+                        "value": float(score),
+                        "range": [0, 1],
+                        "positive_class": "Face forgery",
+                        "interpretation": "Raw SBI softmax signal, not a probability of manipulation",
+                        "calibration_status": "Not calibrated on project data",
+                    }
+                    if score is not None
+                    else None
+                ),
+                "location": None,
+                "support_refs": [],
+                "limitations": FACE_LIMITATIONS,
+                "review_status": "unreviewed",
+                "fixture": False,
+            },
+            "input": {
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "size_bytes": len(raw),
+                "width": image.width,
+                "height": image.height,
+                "original_retained": False,
+                "evidence_id_is_session_local": True,
+            },
+            "model": prediction,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "runtime_ms": round((time.perf_counter() - started) * 1000),
+            "threshold": None,
         }
         destination = ROOT / "data" / "runs"
         destination.mkdir(parents=True, exist_ok=True)
