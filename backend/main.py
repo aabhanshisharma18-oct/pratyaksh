@@ -15,13 +15,21 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from detector import ImageDetector, LIMITATIONS, MODEL_ID, REVISION, model_files_present
+from audio_probe import (
+    AASISTProbe,
+    AudioProbeError,
+    REVISION as AUDIO_REVISION,
+    audio_probe_files_present,
+)
 
 
 ROOT = Path(__file__).parent
 MAX_BYTES = 15 * 1024 * 1024
+MAX_AUDIO_BYTES = 25 * 1024 * 1024
 Image.MAX_IMAGE_PIXELS = 20_000_000
 SLOTS = BoundedSemaphore(1)
 detector = ImageDetector()
+audio_probe = AASISTProbe()
 app = FastAPI(title="Pratyaksh D1", version="0.3.0")
 
 
@@ -39,6 +47,8 @@ def health():
         "contract_version": "1.0",
         "detector_ready": detector.backbone is not None,
         "model_files_present": model_files_present(),
+        "audio_probe_ready": audio_probe.model is not None,
+        "audio_probe_files_present": audio_probe_files_present(),
     }
 
 
@@ -57,7 +67,17 @@ def capabilities():
             "max_bytes": MAX_BYTES,
         },
         "video": {"ready": False, "selection_state": "planned"},
-        "audio": {"ready": False, "selection_state": "candidate_probe_pending"},
+        "audio": {
+            "ready": audio_probe_files_present(),
+            "implemented": True,
+            "loaded": audio_probe.model is not None,
+            "evaluated": False,
+            "selection_state": "execution_probe_only",
+            "candidate": "clovaai/AASIST",
+            "formats": ["Any FFmpeg-decodable audio"],
+            "max_bytes": MAX_AUDIO_BYTES,
+            "reason": "Probe only; no calibrated voice-clone verdict",
+        },
     }
 
 
@@ -156,6 +176,58 @@ def analyze_image(file: UploadFile = File(...)):
             json.dumps(response, indent=2), encoding="utf-8"
         )
         return response
+    finally:
+        file.file.close()
+        SLOTS.release()
+
+
+@app.post("/api/d1/probe-audio")
+def probe_audio(file: UploadFile = File(...)):
+    """Run the audio execution probe without producing a forensic finding."""
+    if not SLOTS.acquire(blocking=False):
+        raise HTTPException(429, "A model is already being processed; try again shortly.")
+    started = time.perf_counter()
+    try:
+        raw = file.file.read(MAX_AUDIO_BYTES + 1)
+        if not raw:
+            raise HTTPException(400, "Empty audio file")
+        if len(raw) > MAX_AUDIO_BYTES:
+            raise HTTPException(413, "Audio exceeds 25 MiB")
+        try:
+            output = audio_probe.probe(raw)
+        except AudioProbeError as exc:
+            raise HTTPException(422, str(exc))
+        except (ImportError, FileNotFoundError, OSError, ValueError, KeyError):
+            raise HTTPException(
+                503,
+                "Audio probe unavailable. Run python setup_day23_models.py and check FFmpeg.",
+            )
+        score = output["model"]["spoof_score"]
+        if not math.isfinite(score) or not 0 <= score <= 1:
+            raise HTTPException(500, "Audio probe returned an invalid score")
+        return {
+            "schema_version": "1.0",
+            "probe_status": "completed",
+            "selection_state": "execution_probe_only",
+            "result": "inconclusive",
+            "observation": "AASIST executed successfully; this is not a voice-clone verdict.",
+            "input": {
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "size_bytes": len(raw),
+                "original_retained": False,
+            },
+            "method": "clovaai/AASIST",
+            "method_version": AUDIO_REVISION,
+            "output": output,
+            "runtime_ms": round((time.perf_counter() - started) * 1000),
+            "threshold": None,
+            "limitations": [
+                "Execution probe only; not evaluated on the Pratyaksh held-out dataset.",
+                "AASIST was trained for ASVspoof logical-access anti-spoofing and is not a universal voice-clone detector.",
+                "Only the first 64,600 decoded samples (about 4.04 seconds) are scored.",
+                "The raw spoof score is not a calibrated probability and must not be used as an authenticity verdict.",
+            ],
+        }
     finally:
         file.file.close()
         SLOTS.release()

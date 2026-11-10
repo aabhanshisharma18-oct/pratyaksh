@@ -1,4 +1,4 @@
-"""Fetch and pin the official UniversalFakeDetect image candidate."""
+"""Fetch and pin the official Day 2-3 image and audio candidates."""
 from __future__ import annotations
 
 import hashlib
@@ -10,14 +10,24 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).parent
-SOURCE = {
-    "name": "UniversalFakeDetect",
-    "url": "https://github.com/WisconsinAIVision/UniversalFakeDetect.git",
-    "revision": "030495aea3300a8b54c0ec37ec7fe1dd7e63c619",
-    "license": "MIT",
-    "weight": "pretrained_weights/fc_weights.pth",
-    "weight_sha256": "477100745713bcc957beb2b40859536859b6483fd6301b3b9293151b194c7847",
-}
+SOURCES = [
+    {
+        "name": "UniversalFakeDetect",
+        "url": "https://github.com/WisconsinAIVision/UniversalFakeDetect.git",
+        "revision": "030495aea3300a8b54c0ec37ec7fe1dd7e63c619",
+        "license": "MIT",
+        "weight": "pretrained_weights/fc_weights.pth",
+        "weight_sha256": "477100745713bcc957beb2b40859536859b6483fd6301b3b9293151b194c7847",
+    },
+    {
+        "name": "aasist",
+        "url": "https://github.com/clovaai/aasist.git",
+        "revision": "a04c9863f63d44471dde8a6abcb3b082b07cd1d1",
+        "license": "MIT",
+        "weight": "models/weights/AASIST.pth",
+        "weight_sha256": "51d2d9cf0738172f61e2a384ec50a54a55363240f67c971ed55a92435bc1a1c0",
+    },
+]
 
 
 def sha256(path: Path) -> str:
@@ -78,6 +88,7 @@ def download_clip() -> None:
 
 
 if __name__ == "__main__":
-    install_source(SOURCE)
+    for source in SOURCES:
+        install_source(source)
     download_clip()
-    print("Day 2 image candidate is ready.")
+    print("Day 2-3 image and audio candidates are ready.")
