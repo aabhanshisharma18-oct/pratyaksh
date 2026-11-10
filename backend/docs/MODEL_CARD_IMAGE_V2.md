@@ -2,9 +2,11 @@
 
 ## Status
 
-Days 2-3 candidate. The exact official checkpoints execute locally, but the method
-has not been evaluated on the Pratyaksh held-out collection. Every API result
-remains `inconclusive` and no operating threshold is enabled.
+Days 2-3 candidate. The exact official checkpoints execute locally. A small
+external DeepfakeTIMIT held-out pilot measured 68.75% accuracy, with a 45.00%
+false-positive rate, so the result is not strong enough to enable an automatic
+verdict. Every API result remains `inconclusive` and no production operating
+threshold is enabled.
 
 ## Method
 
@@ -26,7 +28,8 @@ authenticity certificate.
 
 ## Known limitations
 
-- No project accuracy, calibration, threshold or confidence interval exists.
+- The external pilot is narrow and old; no representative Pratyaksh deployment
+  accuracy or score calibration exists. See `DEEPFAKETIMIT_PILOT_RESULTS.md`.
 - No manipulated-region localization or explanation heatmap is produced.
 - Centre cropping can omit relevant border content.
 - Compression, screenshots, edits, novel generators and natural-image domains can

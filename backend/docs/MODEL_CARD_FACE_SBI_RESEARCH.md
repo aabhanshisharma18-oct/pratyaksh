@@ -2,10 +2,11 @@
 
 ## Status
 
-Optional, unevaluated research candidate for a noncommercial college prototype.
-It was added because the whole-image candidate produced a known face-swap false
-negative. It must not be described as more accurate until the labelled evaluation
-reports demonstrate an improvement.
+Optional research candidate for a noncommercial college prototype. It was added
+because the whole-image candidate produced a known face-swap false negative. A
+small external DeepfakeTIMIT held-out pilot measured only 48.13% accuracy, so it
+did not demonstrate an improvement and must not replace the whole-image
+candidate.
 
 ## Method
 
@@ -28,7 +29,9 @@ than replaces the whole-image AI-generation candidate.
 
 ## Known limitations
 
-- No Pratyaksh accuracy, threshold or calibration has been established.
+- The external pilot is narrow and old; no representative Pratyaksh deployment
+  accuracy or score calibration has been established. See
+  `DEEPFAKETIMIT_PILOT_RESULTS.md`.
 - YuNet replaces RetinaFace from the publisher's evaluation, creating a measurable
   preprocessing domain difference.
 - The model can fail on small, occluded, profile, heavily compressed or unseen
