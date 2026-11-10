@@ -40,3 +40,11 @@ uploaded audio. Neither endpoint claims D2 preservation or chain of custody.
   dashboard integration, model training or a final authenticity verdict.
 - Next evaluation work: permitted labelled controls, group-separated splits,
   threshold selection on development data and held-out error measurement.
+
+## Evaluation foundation
+
+The version 1.1 evaluation manifest records manipulation type and the documented
+basis for every ground-truth label. The evaluator reports false-negative and
+false-positive rates, ranking metrics, and manipulation-specific performance.
+Threshold selection is restricted to the development split. See
+`evaluation/README.md`; never commit restricted evaluation media.

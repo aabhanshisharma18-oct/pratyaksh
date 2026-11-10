@@ -8,9 +8,12 @@ This folder separates three stages that must not be conflated:
 
 Copy `manifest.example.json` to a local manifest and replace every placeholder.
 Do not add restricted media to Git. Every sample needs a stable ID, SHA-256 hash,
-ground-truth label, source group, terms, and split. Variants from the same source
-must share a `group_id`; the evaluator rejects groups spanning development and
-test because that would leak related media into the held-out measurement.
+ground-truth basis, manipulation type, source group, terms, transformation, and
+split. A claim on a webpage is not sufficient ground truth unless its provenance
+can be documented. Variants from the same source must share a `group_id`; the
+evaluator rejects groups spanning development and test because that would leak
+related media into the held-out measurement. `manifest.schema.json` describes
+the version 1.1 fields for tooling that supports JSON Schema.
 
 Save predictions as a JSON list:
 
@@ -29,7 +32,32 @@ Save predictions as a JSON list:
 ]
 ```
 
-Then produce metrics with the already-frozen threshold:
+Generate that list directly from a local manifest split with the pinned image
+candidate:
+
+```bash
+python -m evaluation.run_image_manifest \
+  --manifest evaluation/manifest.local.json \
+  --split development \
+  --output evaluation/predictions-development.json
+```
+
+The runner verifies every image against its manifest SHA-256 before inference.
+Failed samples receive an explicit error record and remain visible in coverage.
+Run the `test` split only after the model configuration and threshold are frozen.
+
+First select a threshold using development predictions only:
+
+```bash
+python -m evaluation.select_threshold \
+  --manifest evaluation/manifest.local.json \
+  --predictions evaluation/predictions-development.json \
+  --objective balanced_accuracy \
+  --output evaluation/results/image-v1-threshold.json
+```
+
+Record and freeze the selected threshold, model revision and preprocessing
+version. Then produce held-out metrics with that already-frozen threshold:
 
 ```bash
 python -m evaluation.evaluate_predictions \
@@ -42,4 +70,7 @@ python -m evaluation.evaluate_predictions \
 ```
 
 The output reports failures and coverage separately from classification metrics.
-Never choose a threshold after looking at the held-out test labels.
+It includes false-negative and false-positive rates, ROC-AUC, average precision,
+and recall/specificity grouped by manipulation type. Never choose a threshold
+after looking at the held-out test labels. Overall accuracy alone is insufficient:
+always inspect false negatives and each manipulation subgroup.
