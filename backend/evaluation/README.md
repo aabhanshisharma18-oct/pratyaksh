@@ -79,3 +79,32 @@ It includes false-negative and false-positive rates, ROC-AUC, average precision,
 and recall/specificity grouped by manipulation type. Never choose a threshold
 after looking at the held-out test labels. Overall accuracy alone is insufficient:
 always inspect false negatives and each manipulation subgroup.
+
+## Reproduce the DeepfakeTIMIT pilot
+
+Download the official DeepfakeTIMIT archive and the 16 VidTIMIT subject ZIPs
+listed in `prepare_deepfaketimit.py` into `data/datasets/`. Those archives,
+derived frames, manifests, predictions and JSON reports remain local and are
+ignored by Git.
+
+```bash
+python -m evaluation.prepare_deepfaketimit
+
+python -m evaluation.run_image_manifest \
+  --manifest evaluation/manifest.deepfaketimit.local.json \
+  --split development --candidate whole_image \
+  --output evaluation/predictions-deepfaketimit-whole-development.json
+
+python -m evaluation.run_image_manifest \
+  --manifest evaluation/manifest.deepfaketimit.local.json \
+  --split test --candidate whole_image \
+  --output evaluation/predictions-deepfaketimit-whole-test.json
+```
+
+Repeat the two prediction commands with `--candidate face_forgery` and distinct
+output names to compare the optional SBI candidate. Select each threshold from
+its development predictions, freeze it, and only then evaluate its test
+predictions. The tracked pilot report records the exact commands, thresholds
+and limitations. The evaluator now also reports 95% Wilson intervals and
+per-pair results; the intervals describe sample-level uncertainty and do not
+correct for repeated frames from the same source pair.
