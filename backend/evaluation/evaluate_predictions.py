@@ -9,11 +9,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from collections import Counter, defaultdict
 from pathlib import Path
 
 LABELS = {"genuine", "synthetic"}
 SPLITS = {"development", "test"}
+SCHEMA_VERSIONS = {"1.0", "1.1"}
 
 
 def load_json(path: Path):
@@ -21,8 +23,9 @@ def load_json(path: Path):
 
 
 def validate_manifest(manifest: dict) -> list[dict]:
-    if manifest.get("schema_version") != "1.0":
-        raise ValueError("manifest schema_version must be 1.0")
+    schema_version = manifest.get("schema_version")
+    if schema_version not in SCHEMA_VERSIONS:
+        raise ValueError("manifest schema_version must be 1.0 or 1.1")
     samples = manifest.get("samples")
     if not isinstance(samples, list) or not samples:
         raise ValueError("manifest must contain a non-empty samples list")
@@ -31,6 +34,13 @@ def validate_manifest(manifest: dict) -> list[dict]:
     groups: dict[str, set[str]] = defaultdict(set)
     for sample in samples:
         required = {"sample_id", "path", "sha256", "label", "split", "group_id", "source", "terms"}
+        if schema_version == "1.1":
+            required |= {
+                "media_type",
+                "manipulation_type",
+                "ground_truth",
+                "transformation",
+            }
         missing = required - sample.keys()
         if missing:
             raise ValueError(f"sample is missing fields: {sorted(missing)}")
@@ -42,6 +52,23 @@ def validate_manifest(manifest: dict) -> list[dict]:
             raise ValueError(f"unsupported label for {sample_id}: {sample['label']}")
         if sample["split"] not in SPLITS:
             raise ValueError(f"unsupported split for {sample_id}: {sample['split']}")
+        if not isinstance(sample["source"], str) or not sample["source"].strip():
+            raise ValueError(f"source must be documented for {sample_id}")
+        if not isinstance(sample["terms"], str) or not sample["terms"].strip():
+            raise ValueError(f"terms must be documented for {sample_id}")
+        if schema_version == "1.1":
+            if sample["media_type"] != "image":
+                raise ValueError(f"media_type must be image for {sample_id}")
+            manipulation = sample["manipulation_type"]
+            if not isinstance(manipulation, str) or not manipulation.strip():
+                raise ValueError(f"manipulation_type must be documented for {sample_id}")
+            if sample["label"] == "genuine" and manipulation != "none":
+                raise ValueError(f"genuine sample must use manipulation_type none: {sample_id}")
+            if sample["label"] == "synthetic" and manipulation == "none":
+                raise ValueError(f"synthetic sample must identify a manipulation type: {sample_id}")
+            ground_truth = sample["ground_truth"]
+            if not isinstance(ground_truth, dict) or not ground_truth.get("basis"):
+                raise ValueError(f"ground_truth basis must be documented for {sample_id}")
         if len(sample["sha256"]) != 64:
             raise ValueError(f"sha256 must contain 64 hexadecimal characters for {sample_id}")
         try:
@@ -66,6 +93,108 @@ def verify_files(samples: list[dict], base_dir: Path) -> None:
             raise ValueError(f"sample hash mismatch: {sample['sample_id']}")
 
 
+def _divide(a: int | float, b: int | float):
+    return round(a / b, 6) if b else None
+
+
+def _binary_metrics(counts: Counter) -> dict:
+    precision = _divide(counts["tp"], counts["tp"] + counts["fp"])
+    recall = _divide(counts["tp"], counts["tp"] + counts["fn"])
+    specificity = _divide(counts["tn"], counts["tn"] + counts["fp"])
+    f1 = (
+        None
+        if precision is None or recall is None or precision + recall == 0
+        else round(2 * precision * recall / (precision + recall), 6)
+    )
+    return {
+        "accuracy": _divide(counts["tp"] + counts["tn"], sum(counts.values())),
+        "precision_synthetic": precision,
+        "recall_synthetic": recall,
+        "false_negative_rate": _divide(counts["fn"], counts["tp"] + counts["fn"]),
+        "specificity_genuine": specificity,
+        "false_positive_rate": _divide(counts["fp"], counts["tn"] + counts["fp"]),
+        "f1_synthetic": f1,
+        "balanced_accuracy": (
+            None
+            if recall is None or specificity is None
+            else round((recall + specificity) / 2, 6)
+        ),
+    }
+
+
+def _ranking_metrics(scored: list[tuple[float, str]]) -> dict:
+    """Return threshold-independent ROC-AUC and average precision.
+
+    ROC-AUC uses average ranks for tied scores. Average precision is the
+    step-wise area under the precision-recall curve used by common ML tools.
+    """
+    positives = sum(label == "synthetic" for _, label in scored)
+    negatives = sum(label == "genuine" for _, label in scored)
+    if not positives or not negatives:
+        return {"roc_auc": None, "average_precision": None}
+
+    ordered = sorted(scored, key=lambda item: item[0])
+    positive_rank_sum = 0.0
+    index = 0
+    while index < len(ordered):
+        end = index + 1
+        while end < len(ordered) and ordered[end][0] == ordered[index][0]:
+            end += 1
+        average_rank = ((index + 1) + end) / 2
+        positive_rank_sum += average_rank * sum(
+            label == "synthetic" for _, label in ordered[index:end]
+        )
+        index = end
+    roc_auc = (
+        positive_rank_sum - positives * (positives + 1) / 2
+    ) / (positives * negatives)
+
+    descending = sorted(scored, key=lambda item: item[0], reverse=True)
+    true_positives = 0
+    examined = 0
+    precision_sum = 0.0
+    index = 0
+    while index < len(descending):
+        end = index + 1
+        while end < len(descending) and descending[end][0] == descending[index][0]:
+            end += 1
+        group_positives = sum(
+            label == "synthetic" for _, label in descending[index:end]
+        )
+        true_positives += group_positives
+        examined += end - index
+        precision_sum += group_positives * (true_positives / examined)
+        index = end
+    return {
+        "roc_auc": round(roc_auc, 6),
+        "average_precision": round(precision_sum / positives, 6),
+    }
+
+
+def _subgroup_results(assessed: list[dict], threshold: float) -> dict:
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for item in assessed:
+        groups[item["manipulation_type"]].append(item)
+    results = {}
+    for name, items in sorted(groups.items()):
+        labels = Counter(item["label"] for item in items)
+        detected = sum(
+            item["label"] == "synthetic" and item["score"] >= threshold
+            for item in items
+        )
+        rejected = sum(
+            item["label"] == "genuine" and item["score"] < threshold
+            for item in items
+        )
+        results[name] = {
+            "sample_count": len(items),
+            "class_counts": dict(sorted(labels.items())),
+            "synthetic_recall": _divide(detected, labels["synthetic"]),
+            "genuine_specificity": _divide(rejected, labels["genuine"]),
+        }
+    return results
+
+
 def score_predictions(samples: list[dict], predictions: list[dict], threshold: float, split: str) -> dict:
     if not 0 <= threshold <= 1:
         raise ValueError("threshold must be between 0 and 1")
@@ -79,6 +208,7 @@ def score_predictions(samples: list[dict], predictions: list[dict], threshold: f
 
     counts = Counter(tp=0, tn=0, fp=0, fn=0)
     unavailable: list[dict] = []
+    assessed: list[dict] = []
     for sample_id, sample in truth.items():
         prediction = by_id.get(sample_id)
         if not prediction or prediction.get("execution_status") != "completed":
@@ -95,41 +225,107 @@ def score_predictions(samples: list[dict], predictions: list[dict], threshold: f
         actual = sample["label"]
         counts[{("synthetic", "synthetic"): "tp", ("genuine", "genuine"): "tn",
                 ("synthetic", "genuine"): "fp", ("genuine", "synthetic"): "fn"}[(predicted, actual)]] += 1
+        assessed.append(
+            {
+                "sample_id": sample_id,
+                "score": float(score),
+                "label": actual,
+                "manipulation_type": sample.get(
+                    "manipulation_type", "none" if actual == "genuine" else "unspecified"
+                ),
+            }
+        )
 
     examined = sum(counts.values())
     total = len(truth)
 
-    def divide(a: int, b: int):
-        return round(a / b, 6) if b else None
-
-    precision = divide(counts["tp"], counts["tp"] + counts["fp"])
-    recall = divide(counts["tp"], counts["tp"] + counts["fn"])
-    specificity = divide(counts["tn"], counts["tn"] + counts["fp"])
-    f1 = None if precision is None or recall is None or precision + recall == 0 else round(2 * precision * recall / (precision + recall), 6)
-    balanced = None if recall is None or specificity is None else round((recall + specificity) / 2, 6)
     class_counts = Counter(s["label"] for s in truth.values())
+    ranking = _ranking_metrics(
+        [(item["score"], item["label"]) for item in assessed]
+    )
     return {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "split": split,
         "threshold": threshold,
         "sample_count": total,
         "examined_count": examined,
-        "coverage": divide(examined, total),
+        "coverage": _divide(examined, total),
         "class_counts": dict(sorted(class_counts.items())),
         "confusion_matrix": dict(counts),
-        "metrics": {
-            "accuracy": divide(counts["tp"] + counts["tn"], examined),
-            "precision_synthetic": precision,
-            "recall_synthetic": recall,
-            "specificity_genuine": specificity,
-            "f1_synthetic": f1,
-            "balanced_accuracy": balanced,
-        },
+        "metrics": {**_binary_metrics(counts), **ranking},
+        "by_manipulation_type": _subgroup_results(assessed, threshold),
         "unavailable": unavailable,
         "notes": [
             "Metrics exclude unavailable or failed samples; coverage reports their effect separately.",
             "Select the threshold on development data before measuring the held-out test split.",
         ],
+    }
+
+
+def select_threshold(
+    samples: list[dict], predictions: list[dict], objective: str = "balanced_accuracy"
+) -> dict:
+    """Select a threshold using development data only.
+
+    Ties prefer higher synthetic recall, then the higher threshold. The held-out
+    test split is deliberately unavailable to this function.
+    """
+    allowed = {"balanced_accuracy", "f1_synthetic"}
+    if objective not in allowed:
+        raise ValueError(f"unsupported threshold objective: {objective}")
+    development_ids = {
+        sample["sample_id"] for sample in samples if sample["split"] == "development"
+    }
+    scores = sorted(
+        {
+            float(prediction["deepfake_score"])
+            for prediction in predictions
+            if prediction.get("sample_id") in development_ids
+            and prediction.get("execution_status") == "completed"
+            and isinstance(prediction.get("deepfake_score"), (int, float))
+            and not isinstance(prediction.get("deepfake_score"), bool)
+            and math.isfinite(float(prediction["deepfake_score"]))
+            and 0 <= float(prediction["deepfake_score"]) <= 1
+        }
+    )
+    if not scores:
+        raise ValueError("no completed development predictions are available")
+    candidates = {0.0, 1.0}
+    candidates.update(scores)
+    candidates.update((left + right) / 2 for left, right in zip(scores, scores[1:]))
+
+    ranked = []
+    for threshold in sorted(candidates):
+        result = score_predictions(samples, predictions, threshold, "development")
+        value = result["metrics"][objective]
+        if value is not None:
+            ranked.append(
+                {
+                    "threshold": threshold,
+                    "objective_value": value,
+                    "recall_synthetic": result["metrics"]["recall_synthetic"],
+                    "false_positive_rate": result["metrics"]["false_positive_rate"],
+                    "coverage": result["coverage"],
+                }
+            )
+    if not ranked:
+        raise ValueError("development data must contain both genuine and synthetic samples")
+    ranked.sort(
+        key=lambda row: (
+            row["objective_value"],
+            row["recall_synthetic"] if row["recall_synthetic"] is not None else -1,
+            row["threshold"],
+        ),
+        reverse=True,
+    )
+    return {
+        "schema_version": "1.0",
+        "selected_on_split": "development",
+        "objective": objective,
+        "threshold": ranked[0]["threshold"],
+        "selection_metrics": ranked[0],
+        "candidate_count": len(ranked),
+        "warning": "Freeze this threshold before evaluating the held-out test split.",
     }
 
 
