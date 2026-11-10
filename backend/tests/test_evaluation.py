@@ -52,6 +52,60 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(records[0]["width"], 64)
         self.assertEqual(detector.size, (64, 48))
 
+    def test_manifest_runner_accepts_face_candidate_score(self):
+        class Detector:
+            def predict(self, image):
+                return {
+                    "execution_status": "completed",
+                    "face_forgery_score": 0.75,
+                }
+
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "sample.png"
+            Image.new("RGB", (64, 48), "white").save(path)
+            item = sample("face", "synthetic", "development", "g-face")
+            item["path"] = path.name
+            item["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+            records = run_samples(
+                [item],
+                Path(folder),
+                "development",
+                Detector(),
+                score_key="face_forgery_score",
+                model_id="face-test",
+                model_revision="test-revision",
+                preprocessing_version="test-preprocessing",
+            )
+
+        self.assertEqual(records[0]["execution_status"], "completed")
+        self.assertEqual(records[0]["deepfake_score"], 0.75)
+        self.assertEqual(records[0]["model_id"], "face-test")
+
+    def test_manifest_runner_reports_no_face_as_unavailable(self):
+        class Detector:
+            def predict(self, image):
+                return {
+                    "execution_status": "no_face",
+                    "face_forgery_score": None,
+                }
+
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "sample.png"
+            Image.new("RGB", (64, 48), "white").save(path)
+            item = sample("no-face", "genuine", "development", "g-no-face")
+            item["path"] = path.name
+            item["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+            records = run_samples(
+                [item],
+                Path(folder),
+                "development",
+                Detector(),
+                score_key="face_forgery_score",
+            )
+
+        self.assertEqual(records[0]["execution_status"], "failed")
+        self.assertIn("no face was detected", records[0]["error"])
+
     def test_metrics_and_unavailable_are_reported_separately(self):
         samples = [
             sample("a", "synthetic", "test", "g-a"),

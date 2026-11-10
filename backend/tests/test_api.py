@@ -26,6 +26,11 @@ class Day23ApiTests(unittest.TestCase):
         self.assertEqual(body["contract_version"], "1.0")
         self.assertEqual(body["image"]["selection_state"], "day23_candidate_unevaluated")
         self.assertFalse(body["image"]["evaluated"])
+        self.assertEqual(
+            body["image"]["face_forgery"]["selection_state"],
+            "research_candidate_unevaluated",
+        )
+        self.assertFalse(body["image"]["face_forgery"]["evaluated"])
         self.assertEqual(body["audio"]["selection_state"], "execution_probe_only")
         self.assertFalse(body["audio"]["evaluated"])
 
@@ -81,6 +86,51 @@ class Day23ApiTests(unittest.TestCase):
                 "/api/d1/analyze-image", files={"file": ("x.png", png())}
             )
         self.assertEqual(response.status_code, 500)
+
+    def test_face_forgery_response_is_traceable_and_inconclusive(self):
+        prediction = {
+            "execution_status": "completed",
+            "face_count": 1,
+            "faces_truncated": False,
+            "face_forgery_score": 0.82,
+            "faces": [
+                {
+                    "bbox_xyxy": [1, 2, 30, 40],
+                    "detection_confidence": 0.95,
+                    "face_forgery_score": 0.82,
+                }
+            ],
+            "device": "test",
+        }
+        with TemporaryDirectory() as folder, patch.object(main, "ROOT", Path(folder)), \
+             patch.object(main.face_forgery_detector, "predict", return_value=prediction):
+            response = self.client.post(
+                "/api/d1/analyze-face-forgery", files={"file": ("x.png", png())}
+            )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["finding"]["result"], "inconclusive")
+        self.assertEqual(body["finding"]["score"]["value"], 0.82)
+        self.assertEqual(body["model"]["face_count"], 1)
+        self.assertIsNone(body["threshold"])
+
+    def test_face_forgery_no_face_does_not_invent_a_score(self):
+        prediction = {
+            "execution_status": "no_face",
+            "face_count": 0,
+            "face_forgery_score": None,
+            "faces": [],
+            "device": "test",
+        }
+        with TemporaryDirectory() as folder, patch.object(main, "ROOT", Path(folder)), \
+             patch.object(main.face_forgery_detector, "predict", return_value=prediction):
+            response = self.client.post(
+                "/api/d1/analyze-face-forgery", files={"file": ("x.png", png())}
+            )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["finding"]["execution_status"], "no_face")
+        self.assertIsNone(body["finding"]["score"])
 
     def test_audio_probe_is_explicitly_inconclusive(self):
         output = {
