@@ -39,8 +39,13 @@ candidate:
 python -m evaluation.run_image_manifest \
   --manifest evaluation/manifest.local.json \
   --split development \
+  --candidate whole_image \
   --output evaluation/predictions-development.json
 ```
+
+For the optional face-specific research candidate, install and set it up first,
+then use `--candidate face_forgery`. Keep its predictions in a separate file so
+the two candidates can be compared on exactly the same labelled samples.
 
 The runner verifies every image against its manifest SHA-256 before inference.
 Failed samples receive an explicit error record and remain visible in coverage.

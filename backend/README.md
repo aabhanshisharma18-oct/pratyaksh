@@ -15,6 +15,7 @@ python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 Open `http://127.0.0.1:8000/docs` to test the APIs:
 
 - `POST /api/d1/analyze-image` — UniversalFakeDetect image candidate.
+- `POST /api/d1/analyze-face-forgery` — optional SBI face-forgery research candidate.
 - `POST /api/d1/probe-audio` — AASIST audio execution probe.
 - `GET /api/capabilities` — implemented, loaded and evaluated state.
 
@@ -33,9 +34,26 @@ preprocessing version, runtime and limitations. It discards the uploaded image.
 The audio endpoint records the input hash and probe metadata, and discards the
 uploaded audio. Neither endpoint claims D2 preservation or chain of custody.
 
+## Optional face-forgery research candidate
+
+The SBI candidate is intended to address face manipulation such as face swaps,
+which the whole-image AI-generation model is not designed to specialize in. SBI
+is restricted to noncommercial research use. Read the model card and official
+licence before accepting it, then install and verify the local model files:
+
+```bash
+python -m pip install -r requirements-face-research.txt
+python setup_face_research_models.py --accept-sbi-research-license
+```
+
+Restart the API and use `POST /api/d1/analyze-face-forgery`. Its output is a raw,
+uncalibrated research signal, not a real/fake verdict. Accuracy must be measured
+on labelled development and held-out test data before selecting a threshold.
+
 ## Current boundary
 
-- Implemented: bounded image analysis path and bounded audio execution probe.
+- Implemented: bounded whole-image analysis, optional bounded face-forgery
+  research analysis, and bounded audio execution probe.
 - Not implemented: video, calibrated thresholds, D2 evidence intake, main D4
   dashboard integration, model training or a final authenticity verdict.
 - Next evaluation work: permitted labelled controls, group-separated splits,

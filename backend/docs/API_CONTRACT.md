@@ -13,6 +13,9 @@ modality-run envelope is `contracts/d1-run.schema.json`.
   image, video and audio separately.
 - `POST /api/d1/analyze-image` accepts a bounded static image and returns one
   traceable, inconclusive synthetic-media finding.
+- `POST /api/d1/analyze-face-forgery` detects faces with YuNet and applies the
+  optional SBI research candidate to each crop. The maximum face signal is
+  reported without a final verdict.
 - `POST /api/d1/probe-audio` accepts bounded FFmpeg-decodable audio and returns an
   AASIST execution-probe record. It is not yet a canonical finding.
 
@@ -27,10 +30,11 @@ copy. D1 must never overwrite the original.
 
 ## Score semantics
 
-The image score is the UniversalFakeDetect sigmoid synthetic-class output. The
-audio score is the AASIST spoof-class softmax output. Neither is a calibrated
-probability that evidence is fake. Until held-out evaluation freezes a threshold,
-every successful result remains `inconclusive`.
+The whole-image score is the UniversalFakeDetect sigmoid synthetic-class output.
+The face-forgery score is the SBI fake-class softmax output for the highest-scored
+detected face. The audio score is the AASIST spoof-class softmax output. None is a
+calibrated probability that evidence is fake. Until held-out evaluation freezes
+a threshold, every successful result remains `inconclusive`.
 
 ## Processing bounds
 
