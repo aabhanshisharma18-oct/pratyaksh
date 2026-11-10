@@ -1,5 +1,6 @@
-import React,{useState,useEffect,useRef} from 'react';
+import React from 'react';
 import {createRoot} from 'react-dom/client';
+<<<<<<< HEAD
 import {Activity,ArrowDownToLine,ArrowLeft,ArrowRight,ArrowUpRight,AudioLines,Bell,BookOpen,Check,CheckCheck,ChevronDown,ChevronLeft,ChevronRight,ChevronsUpDown,ChevronUp, CircleHelp,Clock,Copy,Database,Download,Ellipsis,File,FileCheck,FileImage,FileJson,FileText,Film,FlaskConical,Folder,FolderOpen,GitBranch,Globe,Hash,History,Image as ImageIcon,Info,Layers,Link, ListFilter,Loader2,Lock,Maximize2,Mic,Minus,Monitor, Moon,MoreHorizontal,Pause,Play,Plus,Search,Settings2,Shield,ShieldCheck,SlidersHorizontal,Square,Sun,Target,TriangleAlert,Upload,X,XCircle,ZoomIn,ZoomOut} from 'lucide-react';
 import {channels,seedCases,seedEvidence,fixtureFindings,classification,tone,download,Finding,Evidence,CaseRecord,Note,Channel} from './model';
 import Landing from './Landing';
@@ -69,3 +70,12 @@ function App(){
 function PageHeading({eyebrow,title,subtitle}:{eyebrow:string;title:string;subtitle:string}){const {t}=useI18n();return <div className="page-heading standalone"><div><div className="eyebrow">{t(eyebrow)}</div><h1>{t(title)}</h1><p>{t(subtitle)}</p></div></div>}
 function FolderPlusIcon(){return <FolderOpen size={23}/>}
 createRoot(document.getElementById('root')!).render(<React.StrictMode><LanguageProvider><App/></LanguageProvider></React.StrictMode>);
+=======
+import App from './app/InvestigationApp';
+
+createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);
+>>>>>>> 8bf1253 (feat(frontend): add responsive investigation workspace)
