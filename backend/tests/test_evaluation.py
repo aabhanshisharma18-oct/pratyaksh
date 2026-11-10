@@ -125,6 +125,9 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["false_positive_rate"], 0.0)
         self.assertEqual(result["metrics"]["roc_auc"], 1.0)
         self.assertEqual(result["metrics"]["average_precision"], 1.0)
+        self.assertEqual(result["confidence_intervals_95"]["accuracy"][1], 1.0)
+        self.assertLess(result["confidence_intervals_95"]["accuracy"][0], 1.0)
+        self.assertEqual(result["by_source_group"]["g-a"]["sample_count"], 1)
         self.assertEqual(result["unavailable"][0]["sample_id"], "c")
 
     def test_false_negative_and_manipulation_breakdown_are_visible(self):

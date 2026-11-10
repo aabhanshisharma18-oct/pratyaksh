@@ -97,6 +97,24 @@ def _divide(a: int | float, b: int | float):
     return round(a / b, 6) if b else None
 
 
+def _wilson_interval(successes: int, total: int, z: float = 1.959964):
+    """Return a two-sided 95% Wilson score interval for a binomial rate."""
+    if not total:
+        return None
+    proportion = successes / total
+    denominator = 1 + z * z / total
+    centre = (proportion + z * z / (2 * total)) / denominator
+    margin = (
+        z
+        * math.sqrt(
+            proportion * (1 - proportion) / total
+            + z * z / (4 * total * total)
+        )
+        / denominator
+    )
+    return [round(max(0.0, centre - margin), 6), round(min(1.0, centre + margin), 6)]
+
+
 def _binary_metrics(counts: Counter) -> dict:
     precision = _divide(counts["tp"], counts["tp"] + counts["fp"])
     recall = _divide(counts["tp"], counts["tp"] + counts["fn"])
@@ -195,6 +213,31 @@ def _subgroup_results(assessed: list[dict], threshold: float) -> dict:
     return results
 
 
+def _source_group_results(assessed: list[dict], threshold: float) -> dict:
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for item in assessed:
+        groups[item["group_id"]].append(item)
+    results = {}
+    for name, items in sorted(groups.items()):
+        counts = Counter(tp=0, tn=0, fp=0, fn=0)
+        for item in items:
+            predicted = "synthetic" if item["score"] >= threshold else "genuine"
+            counts[
+                {
+                    ("synthetic", "synthetic"): "tp",
+                    ("genuine", "genuine"): "tn",
+                    ("synthetic", "genuine"): "fp",
+                    ("genuine", "synthetic"): "fn",
+                }[(predicted, item["label"])]
+            ] += 1
+        results[name] = {
+            "sample_count": len(items),
+            "confusion_matrix": dict(counts),
+            "metrics": _binary_metrics(counts),
+        }
+    return results
+
+
 def score_predictions(samples: list[dict], predictions: list[dict], threshold: float, split: str) -> dict:
     if not 0 <= threshold <= 1:
         raise ValueError("threshold must be between 0 and 1")
@@ -233,11 +276,14 @@ def score_predictions(samples: list[dict], predictions: list[dict], threshold: f
                 "manipulation_type": sample.get(
                     "manipulation_type", "none" if actual == "genuine" else "unspecified"
                 ),
+                "group_id": sample["group_id"],
             }
         )
 
     examined = sum(counts.values())
     total = len(truth)
+    positive_total = counts["tp"] + counts["fn"]
+    negative_total = counts["tn"] + counts["fp"]
 
     class_counts = Counter(s["label"] for s in truth.values())
     ranking = _ranking_metrics(
@@ -253,7 +299,14 @@ def score_predictions(samples: list[dict], predictions: list[dict], threshold: f
         "class_counts": dict(sorted(class_counts.items())),
         "confusion_matrix": dict(counts),
         "metrics": {**_binary_metrics(counts), **ranking},
+        "confidence_intervals_95": {
+            "accuracy": _wilson_interval(counts["tp"] + counts["tn"], examined),
+            "recall_synthetic": _wilson_interval(counts["tp"], positive_total),
+            "specificity_genuine": _wilson_interval(counts["tn"], negative_total),
+            "method": "Wilson score interval",
+        },
         "by_manipulation_type": _subgroup_results(assessed, threshold),
+        "by_source_group": _source_group_results(assessed, threshold),
         "unavailable": unavailable,
         "notes": [
             "Metrics exclude unavailable or failed samples; coverage reports their effect separately.",
