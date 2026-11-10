@@ -7,3 +7,5 @@ torch>=2.5,<3
 torchvision>=0.20,<1
 ftfy>=6,<7
 packaging>=24,<27
+regex>=2024,<2027
+tqdm>=4.66,<5
