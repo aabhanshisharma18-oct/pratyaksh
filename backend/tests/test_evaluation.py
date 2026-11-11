@@ -1,6 +1,8 @@
 import hashlib
+import json
 import sys
 import unittest
+import zipfile
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -12,6 +14,14 @@ from evaluation.evaluate_predictions import (
     select_threshold,
     validate_manifest,
 )
+from evaluation.prepare_asvspoof2019_la import build_manifest as build_audio_manifest
+from evaluation.run_asvspoof2019_la_archive import (
+    load_journal,
+    make_sample as make_archive_sample,
+    protocol_rows,
+    select_balanced_rows,
+)
+from evaluation.run_audio_manifest import run_samples as run_audio_samples
 from evaluation.run_image_manifest import run_samples
 
 
@@ -33,6 +43,133 @@ def sample(sample_id, label, split, group_id):
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_asvspoof_pilot_sampling_is_balanced_and_reproducible(self):
+        rows = [
+            {
+                "speaker_id": f"S{i % 3}",
+                "utterance_id": f"U{i}",
+                "attack_id": "-" if i < 6 else "A01",
+                "label": "bonafide" if i < 6 else "spoof",
+                "line_number": i + 1,
+            }
+            for i in range(12)
+        ]
+        first = select_balanced_rows(rows, 3, "fixed-seed")
+        second = select_balanced_rows(rows, 3, "fixed-seed")
+        self.assertEqual(first, second)
+        self.assertEqual(sum(row["label"] == "bonafide" for row in first), 3)
+        self.assertEqual(sum(row["label"] == "spoof" for row in first), 3)
+
+    def test_asvspoof_archive_protocol_and_resume_journal(self):
+        with TemporaryDirectory() as folder:
+            archive_path = Path(folder) / "LA.zip"
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                archive.writestr(
+                    "LA/ASVspoof2019_LA_cm_protocols/"
+                    "ASVspoof2019.LA.cm.dev.trl.txt",
+                    "DEV1 LA_D_1 - - bonafide\nDEV1 LA_D_2 - A01 spoof\n",
+                )
+                archive.writestr(
+                    "LA/ASVspoof2019_LA_dev/flac/LA_D_1.flac", b"real"
+                )
+                archive.writestr(
+                    "LA/ASVspoof2019_LA_dev/flac/LA_D_2.flac", b"fake"
+                )
+            with zipfile.ZipFile(archive_path) as archive:
+                rows, members = protocol_rows(archive, "development")
+
+            self.assertEqual(len(rows), 2)
+            self.assertTrue(members["LA_D_2"].endswith("LA_D_2.flac"))
+            sample_item = make_archive_sample(
+                "development", rows[1], members["LA_D_2"], "a" * 64
+            )
+            self.assertEqual(sample_item["label"], "synthetic")
+            self.assertEqual(
+                sample_item["manipulation_type"], "asvspoof2019_la_a01"
+            )
+
+            journal = Path(folder) / "resume.jsonl"
+            journal.write_text(
+                json.dumps(
+                    {
+                        "sample": sample_item,
+                        "prediction": {"execution_status": "completed"},
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            resumed = load_journal(journal)
+            self.assertIn(sample_item["sample_id"], resumed)
+
+    def test_asvspoof_preparer_maps_official_splits_and_labels(self):
+        with TemporaryDirectory() as folder:
+            root = Path(folder) / "LA"
+            protocols = root / "ASVspoof2019_LA_cm_protocols"
+            dev_audio = root / "ASVspoof2019_LA_dev" / "flac"
+            test_audio = root / "ASVspoof2019_LA_eval" / "flac"
+            protocols.mkdir(parents=True)
+            dev_audio.mkdir(parents=True)
+            test_audio.mkdir(parents=True)
+            (protocols / "ASVspoof2019.LA.cm.dev.trl.txt").write_text(
+                "DEV1 LA_D_1 - - bonafide\nDEV1 LA_D_2 - A01 spoof\n",
+                encoding="utf-8",
+            )
+            (protocols / "ASVspoof2019.LA.cm.eval.trl.txt").write_text(
+                "TEST1 LA_E_1 - - bonafide\nTEST1 LA_E_2 - A07 spoof\n",
+                encoding="utf-8",
+            )
+            for directory, names in (
+                (dev_audio, ("LA_D_1", "LA_D_2")),
+                (test_audio, ("LA_E_1", "LA_E_2")),
+            ):
+                for name in names:
+                    (directory / f"{name}.flac").write_bytes(name.encode())
+            output = Path(folder) / "evaluation" / "manifest.audio.local.json"
+            manifest = build_audio_manifest(root, output)
+
+        self.assertEqual(len(manifest["samples"]), 4)
+        by_id = {item["sample_id"]: item for item in manifest["samples"]}
+        self.assertEqual(
+            by_id["ASV19-LA-DEVELOPMENT-LA_D_2"]["manipulation_type"],
+            "asvspoof2019_la_a01",
+        )
+        self.assertEqual(by_id["ASV19-LA-TEST-LA_E_1"]["label"], "genuine")
+
+    def test_audio_manifest_runner_hashes_and_scores_local_audio(self):
+        class Probe:
+            def probe(self, raw):
+                self.raw = raw
+                return {
+                    "decoded": {
+                        "sample_rate_hz": 16000,
+                        "decoded_duration_ms": 1250,
+                    },
+                    "model": {"spoof_score": 0.75},
+                }
+
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "sample.wav"
+            path.write_bytes(b"unit-test-audio")
+            item = sample("audio", "synthetic", "development", "speaker-a")
+            item.update(
+                {
+                    "path": path.name,
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                    "media_type": "audio",
+                    "manipulation_type": "text_to_speech",
+                }
+            )
+            probe = Probe()
+            records = run_audio_samples(
+                [item], Path(folder), "development", probe
+            )
+
+        self.assertEqual(records[0]["execution_status"], "completed")
+        self.assertEqual(records[0]["deepfake_score"], 0.75)
+        self.assertEqual(records[0]["decoded_duration_ms"], 1250)
+        self.assertEqual(probe.raw, b"unit-test-audio")
+
     def test_manifest_runner_hashes_and_scores_local_image(self):
         class Detector:
             def predict(self, image):
@@ -125,6 +262,7 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["false_positive_rate"], 0.0)
         self.assertEqual(result["metrics"]["roc_auc"], 1.0)
         self.assertEqual(result["metrics"]["average_precision"], 1.0)
+        self.assertEqual(result["metrics"]["equal_error_rate"], 0.0)
         self.assertEqual(result["confidence_intervals_95"]["accuracy"][1], 1.0)
         self.assertLess(result["confidence_intervals_95"]["accuracy"][0], 1.0)
         self.assertEqual(result["by_source_group"]["g-a"]["sample_count"], 1)
@@ -162,6 +300,15 @@ class EvaluationTests(unittest.TestCase):
         item["manipulation_type"] = "none"
         with self.assertRaisesRegex(ValueError, "must identify a manipulation type"):
             validate_manifest({"schema_version": "1.1", "samples": [item]})
+
+    def test_v11_manifest_accepts_documented_audio(self):
+        item = sample("audio", "synthetic", "development", "speaker-a")
+        item["media_type"] = "audio"
+        item["manipulation_type"] = "voice_conversion"
+        validated = validate_manifest(
+            {"schema_version": "1.1", "samples": [item]}
+        )
+        self.assertEqual(validated[0]["media_type"], "audio")
 
     def test_threshold_is_selected_from_development_predictions(self):
         samples = [
