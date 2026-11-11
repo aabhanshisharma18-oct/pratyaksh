@@ -68,10 +68,13 @@ def protocol_rows(archive: zipfile.ZipFile, split: str) -> tuple[list[dict], dic
     # Reuse the strict official-protocol parser without extracting the corpus.
     import tempfile
 
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", encoding="utf-8") as stream:
-        stream.write(protocol_text)
-        stream.flush()
-        rows = read_protocol(Path(stream.name))
+    # Windows does not permit read_protocol() to reopen a NamedTemporaryFile
+    # while its original handle is still open. Use a temporary directory so
+    # the protocol file is closed before the shared parser reads it.
+    with tempfile.TemporaryDirectory() as folder:
+        protocol_path = Path(folder) / protocol_name
+        protocol_path.write_text(protocol_text, encoding="utf-8")
+        rows = read_protocol(protocol_path)
 
     audio_members = {
         Path(name).stem: name
