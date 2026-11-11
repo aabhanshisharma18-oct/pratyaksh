@@ -51,6 +51,8 @@ def run_samples(
             "preprocessing_version": preprocessing_version,
         }
         try:
+            if sample.get("media_type") != "image":
+                raise ValueError("image runner requires media_type image")
             path = (base_dir / sample["path"]).resolve()
             raw = path.read_bytes()
             if not raw or len(raw) > MAX_BYTES:

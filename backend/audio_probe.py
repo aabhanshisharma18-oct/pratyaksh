@@ -16,8 +16,10 @@ import numpy as np
 
 ROOT = Path(__file__).parent
 SOURCE_DIR = ROOT / "third_party" / "aasist"
+MODEL_ID = "clovaai/AASIST"
 REVISION = "a04c9863f63d44471dde8a6abcb3b082b07cd1d1"
 WEIGHTS_SHA256 = "51d2d9cf0738172f61e2a384ec50a54a55363240f67c971ed55a92435bc1a1c0"
+PREPROCESSING_VERSION = "ffmpeg-mono-16khz-first64600-repeat-v1"
 SAMPLE_RATE = 16_000
 MODEL_SAMPLES = 64_600
 MAX_DECODE_SECONDS = 30
@@ -137,29 +139,39 @@ class AASISTProbe:
         self.model = model.to("cpu").eval()
 
     def predict_samples(self, samples: np.ndarray) -> dict:
+        return self.predict_batch_samples([samples])[0]
+
+    def predict_batch_samples(self, sample_batches: list[np.ndarray]) -> list[dict]:
         import torch
 
+        if not sample_batches:
+            return []
         with self.lock:
             if self.model is None:
                 self._load()
-            prepared = prepare_aasist_input(samples)
-            tensor = torch.from_numpy(prepared).float().unsqueeze(0)
+            prepared = np.stack(
+                [prepare_aasist_input(samples) for samples in sample_batches]
+            )
+            tensor = torch.from_numpy(prepared).float()
             with torch.inference_mode():
                 _, logits = self.model(tensor)
-                scores = torch.softmax(logits, dim=-1)[0]
+                scores = torch.softmax(logits, dim=-1)
             # The official data utility maps spoof=0 and bonafide=1.
-            return {
-                "spoof_score": float(scores[0].item()),
-                "class_scores": {
-                    "Spoof": float(scores[0].item()),
-                    "Bonafide": float(scores[1].item()),
-                },
-                "raw_logits": [float(value) for value in logits[0].tolist()],
-                "device": "cpu",
-                "model_samples": MODEL_SAMPLES,
-                "model_duration_ms": round(MODEL_SAMPLES / SAMPLE_RATE * 1000),
-                "weights_sha256": self.manifest["weights_sha256"],
-            }
+            return [
+                {
+                    "spoof_score": float(item_scores[0].item()),
+                    "class_scores": {
+                        "Spoof": float(item_scores[0].item()),
+                        "Bonafide": float(item_scores[1].item()),
+                    },
+                    "raw_logits": [float(value) for value in item_logits.tolist()],
+                    "device": "cpu",
+                    "model_samples": MODEL_SAMPLES,
+                    "model_duration_ms": round(MODEL_SAMPLES / SAMPLE_RATE * 1000),
+                    "weights_sha256": self.manifest["weights_sha256"],
+                }
+                for item_scores, item_logits in zip(scores, logits)
+            ]
 
     def probe(self, raw: bytes) -> dict:
         samples, decoded = decode_audio(raw)

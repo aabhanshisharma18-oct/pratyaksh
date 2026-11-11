@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.1",
+  "name": "Replace with the approved D1 audio evaluation collection",
+  "created_at": "2026-11-10T00:00:00Z",
+  "samples": [
+    {
+      "sample_id": "AUD-DEV-REAL-001",
+      "path": "media/audio/replace-with-development-bonafide.flac",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "label": "genuine",
+      "split": "development",
+      "group_id": "SPEAKER-DEV-001",
+      "media_type": "audio",
+      "manipulation_type": "none",
+      "ground_truth": {
+        "basis": "Bonafide label from the licensed dataset protocol",
+        "reference": "Replace with the protocol record"
+      },
+      "source": "Document dataset, speaker grouping and collection procedure",
+      "terms": "Document licence and redistribution restrictions",
+      "transformation": "none"
+    },
+    {
+      "sample_id": "AUD-DEV-SPOOF-001",
+      "path": "media/audio/replace-with-development-spoof.flac",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "label": "synthetic",
+      "split": "development",
+      "group_id": "SPEAKER-DEV-001",
+      "media_type": "audio",
+      "manipulation_type": "text_to_speech",
+      "ground_truth": {
+        "basis": "Spoof label and attack identifier from the licensed dataset protocol",
+        "reference": "Replace with the protocol record and attack ID"
+      },
+      "source": "Document dataset, speaker grouping and attack family",
+      "terms": "Document licence and redistribution restrictions",
+      "transformation": "none"
+    },
+    {
+      "sample_id": "AUD-TEST-REAL-001",
+      "path": "media/audio/replace-with-held-out-bonafide.flac",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "label": "genuine",
+      "split": "test",
+      "group_id": "SPEAKER-TEST-001",
+      "media_type": "audio",
+      "manipulation_type": "none",
+      "ground_truth": {
+        "basis": "Bonafide label from the licensed dataset protocol",
+        "reference": "Replace with the protocol record"
+      },
+      "source": "Document dataset, held-out speaker and collection procedure",
+      "terms": "Document licence and redistribution restrictions",
+      "transformation": "none"
+    },
+    {
+      "sample_id": "AUD-TEST-SPOOF-001",
+      "path": "media/audio/replace-with-held-out-spoof.flac",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "label": "synthetic",
+      "split": "test",
+      "group_id": "SPEAKER-TEST-001",
+      "media_type": "audio",
+      "manipulation_type": "voice_conversion",
+      "ground_truth": {
+        "basis": "Spoof label and attack identifier from the licensed dataset protocol",
+        "reference": "Replace with the protocol record and attack ID"
+      },
+      "source": "Document dataset, held-out speaker and attack family",
+      "terms": "Document licence and redistribution restrictions",
+      "transformation": "none"
+    }
+  ]
+}
