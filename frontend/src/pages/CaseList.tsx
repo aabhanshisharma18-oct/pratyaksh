@@ -1,7 +1,7 @@
 import React,{useMemo,useState} from 'react';
 import {ArrowUpRight,FolderOpen,Plus,Search} from 'lucide-react';
 import {CaseRecord,Evidence,Finding} from '../model';
-import {CaseSort,filterAndSortCases} from '../data/caseSource';
+import {CaseSort,filterAndSortCases} from '../data/caseView';
 import {selectProcessingSummary} from '../selectors/processing';
 import {useI18n} from '../i18n';
 
