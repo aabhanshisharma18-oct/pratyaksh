@@ -1,4 +1,4 @@
-# D1 image evaluation
+# D1 media evaluation
 
 This folder separates three stages that must not be conflated:
 
@@ -76,9 +76,86 @@ python -m evaluation.evaluate_predictions \
 
 The output reports failures and coverage separately from classification metrics.
 It includes false-negative and false-positive rates, ROC-AUC, average precision,
-and recall/specificity grouped by manipulation type. Never choose a threshold
-after looking at the held-out test labels. Overall accuracy alone is insufficient:
-always inspect false negatives and each manipulation subgroup.
+empirical equal-error rate (EER), and recall/specificity grouped by manipulation
+type. Never choose a threshold after looking at the held-out test labels. Overall
+accuracy alone is insufficient: always inspect false negatives and each
+manipulation subgroup.
+
+## Evaluate the AASIST audio candidate
+
+Audio uses the same manifest, split, threshold-selection and held-out evaluation
+rules. Start from `manifest.audio.example.json`, set `media_type` to `audio`, use
+`none` for genuine recordings and a
+documented manipulation such as `text_to_speech` or `voice_conversion` for spoof
+recordings. All recordings from the same speaker or source family must share a
+`group_id` and stay in one split.
+
+```bash
+python -m evaluation.run_audio_manifest \
+  --manifest evaluation/manifest.audio.local.json \
+  --split development \
+  --output evaluation/predictions-audio-development.json
+
+python -m evaluation.select_threshold \
+  --manifest evaluation/manifest.audio.local.json \
+  --predictions evaluation/predictions-audio-development.json \
+  --objective balanced_accuracy \
+  --output evaluation/results/audio-threshold.json
+```
+
+After freezing the selected development threshold, run the audio runner on the
+test split and pass its predictions plus that frozen threshold to
+`evaluation.evaluate_predictions`. The runner verifies each file SHA-256 before
+FFmpeg decoding. Failed, short and silent recordings remain visible in coverage.
+
+The official AASIST checkpoint was trained and evaluated on ASVspoof 2019 LA.
+Obtain `LA.zip` under the Open Data Commons Attribution License and place it at
+`data/datasets/asvspoof2019/LA.zip`. On storage-constrained systems, evaluate
+directly from the verified archive without extracting it:
+
+```bash
+python -m evaluation.run_asvspoof2019_la_archive \
+  --split development \
+  --manifest evaluation/manifest.asvspoof2019-la-development.local.json \
+  --predictions evaluation/predictions-asvspoof2019-la-development.json \
+  --journal evaluation/results/asvspoof2019-la-development.jsonl
+```
+
+The runner verifies the official archive SHA-256 before inference and appends a
+durable journal after every sample. Rerun the same command to resume after an
+interruption. Select and freeze a threshold using the completed development
+outputs, then repeat with `--split test` and separate test filenames. The test
+split is the official evaluation partition and contains attacks not present in
+development. Never use it to tune the threshold.
+
+To execute those stages automatically while preserving the same resumable
+journals and development/test separation, run:
+
+```bash
+python -m evaluation.run_asvspoof2019_la_benchmark
+```
+
+Its `summary.json` contains the frozen threshold and only the final held-out
+metrics; detailed attack-family results remain in `heldout-test-report.json`.
+
+For a shorter, explicitly labelled pilot, use a deterministic class-balanced
+subset. This does not replace the complete benchmark:
+
+```bash
+python -m evaluation.run_asvspoof2019_la_benchmark \
+  --development-per-class 1000 \
+  --test-per-class 2000
+```
+
+That pilot scores 2,000 development clips and 4,000 held-out test clips. Its
+summary records the sampling method and warns that sampling uncertainty is
+larger than for the complete split.
+
+If sufficient disk space is available, the extracted alternative remains
+`python -m evaluation.prepare_asvspoof2019_la`; it maps the official protocols,
+hashes every FLAC in place and writes an ignored local manifest. Do not commit or
+redistribute corpus audio. No project audio accuracy exists until the held-out
+evaluation process has completed.
 
 ## Reproduce the DeepfakeTIMIT pilot
 

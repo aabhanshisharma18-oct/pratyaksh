@@ -30,6 +30,9 @@ detector.
   index `1` is bonafide.
 - Added `POST /api/d1/probe-audio`, always marked `execution_probe_only` and
   `inconclusive`.
+- Added a hashed audio-manifest runner that records raw spoof scores separately
+  for development and test splits. The shared evaluator now reports EER alongside
+  accuracy and error rates.
 
 AASIST was trained for ASVspoof logical-access anti-spoofing. It is not a universal
 voice-clone detector and requires permitted held-out genuine and spoof evaluation.
