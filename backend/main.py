@@ -3,6 +3,7 @@ import hashlib
 import io
 import json
 import math
+import os
 import time
 import uuid
 import warnings
@@ -12,8 +13,11 @@ from pathlib import Path
 from threading import BoundedSemaphore
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, ImageOps, UnidentifiedImageError
 
+from cases import get_case_repository
+from cases import router as cases_router
 from detector import ImageDetector, LIMITATIONS, MODEL_ID, REVISION, model_files_present
 from face_forgery_detector import (
     FaceForgeryDetector,
@@ -39,6 +43,22 @@ detector = ImageDetector()
 face_forgery_detector = FaceForgeryDetector()
 audio_probe = AASISTProbe()
 app = FastAPI(title="Pratyaksh D1", version="0.4.0")
+case_repository = get_case_repository()
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "PRATYAKSH_CORS_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173"
+    ).split(",")
+    if origin.strip()
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.include_router(cases_router, prefix="/api")
 
 
 @app.get("/")
@@ -59,6 +79,7 @@ def health():
         "face_model_files_present": face_model_files_present(),
         "audio_probe_ready": audio_probe.model is not None,
         "audio_probe_files_present": audio_probe_files_present(),
+        "case_store_ready": case_repository.ready(),
     }
 
 

@@ -34,6 +34,11 @@ class Day23ApiTests(unittest.TestCase):
         self.assertEqual(body["audio"]["selection_state"], "execution_probe_only")
         self.assertFalse(body["audio"]["evaluated"])
 
+    def test_health_reports_case_store_readiness(self):
+        body = self.client.get("/api/health").json()
+        self.assertEqual(body["status"], "ok")
+        self.assertTrue(body["case_store_ready"])
+
     def test_missing_image_model_returns_unavailable(self):
         with patch.object(main.detector, "predict", side_effect=FileNotFoundError):
             response = self.client.post(
