@@ -1,4 +1,4 @@
-"""Validate a held-out manifest and score saved D1 image predictions.
+"""Validate a held-out manifest and score saved D1 media predictions.
 
 This intentionally evaluates saved outputs rather than running inference. It keeps
 model execution, threshold selection, and final test-set measurement as separate,
@@ -57,8 +57,8 @@ def validate_manifest(manifest: dict) -> list[dict]:
         if not isinstance(sample["terms"], str) or not sample["terms"].strip():
             raise ValueError(f"terms must be documented for {sample_id}")
         if schema_version == "1.1":
-            if sample["media_type"] != "image":
-                raise ValueError(f"media_type must be image for {sample_id}")
+            if sample["media_type"] not in {"image", "audio"}:
+                raise ValueError(f"unsupported media_type for {sample_id}")
             manipulation = sample["manipulation_type"]
             if not isinstance(manipulation, str) or not manipulation.strip():
                 raise ValueError(f"manipulation_type must be documented for {sample_id}")
@@ -141,7 +141,7 @@ def _binary_metrics(counts: Counter) -> dict:
 
 
 def _ranking_metrics(scored: list[tuple[float, str]]) -> dict:
-    """Return threshold-independent ROC-AUC and average precision.
+    """Return threshold-independent ROC-AUC, AP and an empirical EER point.
 
     ROC-AUC uses average ranks for tied scores. Average precision is the
     step-wise area under the precision-recall curve used by common ML tools.
@@ -149,7 +149,12 @@ def _ranking_metrics(scored: list[tuple[float, str]]) -> dict:
     positives = sum(label == "synthetic" for _, label in scored)
     negatives = sum(label == "genuine" for _, label in scored)
     if not positives or not negatives:
-        return {"roc_auc": None, "average_precision": None}
+        return {
+            "roc_auc": None,
+            "average_precision": None,
+            "equal_error_rate": None,
+            "eer_threshold": None,
+        }
 
     ordered = sorted(scored, key=lambda item: item[0])
     positive_rank_sum = 0.0
@@ -183,9 +188,45 @@ def _ranking_metrics(scored: list[tuple[float, str]]) -> dict:
         examined += end - index
         precision_sum += group_positives * (true_positives / examined)
         index = end
+    eer_candidates = []
+    positives_below = 0
+    negatives_below = 0
+    index = 0
+    while index < len(ordered):
+        end = index + 1
+        while end < len(ordered) and ordered[end][0] == ordered[index][0]:
+            end += 1
+        threshold = ordered[index][0]
+        false_negative_rate = positives_below / positives
+        false_positive_rate = (negatives - negatives_below) / negatives
+        eer_candidates.append(
+            (
+                abs(false_negative_rate - false_positive_rate),
+                (false_negative_rate + false_positive_rate) / 2,
+                threshold,
+            )
+        )
+        positives_below += sum(
+            label == "synthetic" for _, label in ordered[index:end]
+        )
+        negatives_below += sum(
+            label == "genuine" for _, label in ordered[index:end]
+        )
+        index = end
+    eer_candidates.append(
+        (
+            1.0,
+            0.5,
+            math.nextafter(ordered[-1][0], math.inf),
+        )
+    )
+    _, equal_error_rate, eer_threshold = min(eer_candidates)
+
     return {
         "roc_auc": round(roc_auc, 6),
         "average_precision": round(precision_sum / positives, 6),
+        "equal_error_rate": round(equal_error_rate, 6),
+        "eer_threshold": eer_threshold,
     }
 
 
@@ -326,39 +367,62 @@ def select_threshold(
     allowed = {"balanced_accuracy", "f1_synthetic"}
     if objective not in allowed:
         raise ValueError(f"unsupported threshold objective: {objective}")
-    development_ids = {
-        sample["sample_id"] for sample in samples if sample["split"] == "development"
+    development = {
+        sample["sample_id"]: sample
+        for sample in samples
+        if sample["split"] == "development"
     }
-    scores = sorted(
-        {
-            float(prediction["deepfake_score"])
-            for prediction in predictions
-            if prediction.get("sample_id") in development_ids
+    scored = []
+    for prediction in predictions:
+        sample = development.get(prediction.get("sample_id"))
+        score = prediction.get("deepfake_score")
+        if (
+            sample
             and prediction.get("execution_status") == "completed"
-            and isinstance(prediction.get("deepfake_score"), (int, float))
-            and not isinstance(prediction.get("deepfake_score"), bool)
-            and math.isfinite(float(prediction["deepfake_score"]))
-            and 0 <= float(prediction["deepfake_score"]) <= 1
-        }
-    )
-    if not scores:
+            and isinstance(score, (int, float))
+            and not isinstance(score, bool)
+            and math.isfinite(float(score))
+            and 0 <= float(score) <= 1
+        ):
+            scored.append((float(score), sample["label"]))
+    if not scored:
         raise ValueError("no completed development predictions are available")
+    scores = sorted({score for score, _ in scored})
     candidates = {0.0, 1.0}
     candidates.update(scores)
     candidates.update((left + right) / 2 for left, right in zip(scores, scores[1:]))
 
+    ordered = sorted(scored, reverse=True)
+    positives = sum(label == "synthetic" for _, label in ordered)
+    negatives = len(ordered) - positives
+    true_positives = 0
+    false_positives = 0
+    cursor = 0
+    coverage = _divide(len(ordered), len(development))
     ranked = []
-    for threshold in sorted(candidates):
-        result = score_predictions(samples, predictions, threshold, "development")
-        value = result["metrics"][objective]
+    for threshold in sorted(candidates, reverse=True):
+        while cursor < len(ordered) and ordered[cursor][0] >= threshold:
+            if ordered[cursor][1] == "synthetic":
+                true_positives += 1
+            else:
+                false_positives += 1
+            cursor += 1
+        counts = Counter(
+            tp=true_positives,
+            fp=false_positives,
+            fn=positives - true_positives,
+            tn=negatives - false_positives,
+        )
+        metrics = _binary_metrics(counts)
+        value = metrics[objective]
         if value is not None:
             ranked.append(
                 {
                     "threshold": threshold,
                     "objective_value": value,
-                    "recall_synthetic": result["metrics"]["recall_synthetic"],
-                    "false_positive_rate": result["metrics"]["false_positive_rate"],
-                    "coverage": result["coverage"],
+                    "recall_synthetic": metrics["recall_synthetic"],
+                    "false_positive_rate": metrics["false_positive_rate"],
+                    "coverage": coverage,
                 }
             )
     if not ranked:

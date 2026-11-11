@@ -1,4 +1,4 @@
-"""Select and record a D1 image threshold on development data only."""
+"""Select and record a D1 media threshold on development data only."""
 from __future__ import annotations
 
 import argparse
