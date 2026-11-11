@@ -1,0 +1,11 @@
+{
+  "fixture_notice": {"label":"DEVELOPMENT FIXTURE: not a real forensic result","marker":"__PRATYAKSH_FIXTURE_PAYLOAD__","contract":"fixture-index-1.0"},
+  "data": {
+    "fixture": true,
+    "scenarios": [
+      {"id":"executive-impersonation","description":"Fictional multimedia review covering completed, partial, queued, running, failed and cancelled runs.","case_evidence":"./case-evidence.json","runs":["./runs/RUN-00a4.json","./runs/RUN-00a5.json","./runs/RUN-00a6.json","./runs/RUN-00a7.json","./runs/RUN-00a8.json","./runs/RUN-00a9.json"]},
+      {"id":"evaluation-measured","description":"Small synthetic image and audio measurements with failures and sub-100% coverage.","evaluations":["./evaluation/image-test.json","./evaluation/audio-test.json"]},
+      {"id":"evaluation-empty","description":"Video not evaluated and no-measurement UI states.","evaluations":["./evaluation/video.json","./evaluation/empty.json"]}
+    ]
+  }
+}
