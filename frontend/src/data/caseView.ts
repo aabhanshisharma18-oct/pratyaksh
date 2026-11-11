@@ -1,4 +1,4 @@
-import {CaseRecord,Evidence,Finding,fixtureFindings,seedCases,seedEvidence} from '../model';
+import {CaseRecord,Evidence,Finding} from '../model';
 
 export const CASES_KEY='pratyaksh-cases';
 export const NOTES_KEY='pratyaksh-notes';
@@ -18,15 +18,15 @@ export type CaseSource={
 export function createCaseSource(fixture:boolean):CaseSource{
   return {
     fixture,
-    getCases:()=>read(CASES_KEY,fixture?seedCases:[]),
+    getCases:()=>read(CASES_KEY,[]),
     saveCases:cases=>localStorage.setItem(CASES_KEY,JSON.stringify(cases)),
-    getEvidence:()=>fixture?seedEvidence:[],
-    getFindings:()=>fixture?fixtureFindings:[],
+    getEvidence:()=>[],
+    getFindings:()=>[],
   };
 }
 
 export function evidenceForCase(items:Evidence[],caseId:string):Evidence[]{
-  return items.filter(item=>(item.fixture&&caseId===seedCases[0]?.id)||(!item.fixture&&item.id.startsWith(caseId)));
+  return items.filter(item=>(item.fixture&&caseId==='CASE-2026-014')||(!item.fixture&&item.id.startsWith(caseId)));
 }
 
 export type CaseSort='newest'|'oldest'|'title';
