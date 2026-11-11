@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pratyaksh.local/schemas/case-1.0.json",
+  "title": "Pratyaksh Case Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "description", "status", "created_at", "created_by", "created_by_verified"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^CASE-[0-9]{4}-[0-9]{6}$"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 100},
+    "description": {"type": "string", "maxLength": 2000},
+    "status": {"const": "Open"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "created_by": {"type": "string", "minLength": 1},
+    "created_by_verified": {"const": false}
+  }
+}

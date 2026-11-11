@@ -18,6 +18,29 @@ Open `http://127.0.0.1:8000/docs` to test the APIs:
 - `POST /api/d1/analyze-face-forgery` — optional SBI face-forgery research candidate.
 - `POST /api/d1/probe-audio` — AASIST audio execution probe.
 - `GET /api/capabilities` — implemented, loaded and evaluated state.
+- `POST /api/cases` and `GET /api/cases` — persistent case records.
+- `POST /api/cases/{case_id}/evidence` — inventory metadata and a
+  client-declared hash; the file is not uploaded or preserved.
+
+## Case store configuration
+
+The case API uses SQLite from the Python standard library and initializes its
+schema idempotently. By default the database is `backend/data/pratyaksh.db`.
+Override it with `PRATYAKSH_DB_PATH`:
+
+```powershell
+$env:PRATYAKSH_DB_PATH = "C:\data\pratyaksh.db"
+```
+
+The Vite development origins `http://127.0.0.1:5173` and
+`http://localhost:5173` are allowed by default. Set a comma-separated
+`PRATYAKSH_CORS_ORIGINS` value to replace that list. Start the frontend with
+`VITE_API_BASE_URL=http://127.0.0.1:8000` to enable API mode. Without that value,
+the frontend remains an explicitly labelled localStorage prototype.
+
+`X-Analyst-Name` is optional and self-declared; it is not authenticated. The case
+event table is an operational log, not a tamper-evident audit trail. D2 file
+preservation remains unimplemented.
 
 The setup script checks out pinned official source revisions and verifies the model
 checkpoints. Model files and uploaded evidence stay local and are ignored by Git.

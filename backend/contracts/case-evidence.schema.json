@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pratyaksh.local/schemas/case-evidence-1.0.json",
+  "title": "Pratyaksh Case Evidence Inventory Link",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "evidence_id", "filename", "media_type", "role", "size_bytes", "sha256", "hash_source", "registered_at", "registered_by", "registered_by_verified", "preserved", "preserved_evidence_id", "duplicate_hash_of"],
+  "properties": {
+    "case_id": {"type": "string", "pattern": "^CASE-[0-9]{4}-[0-9]{6}$"},
+    "evidence_id": {"type": "string", "minLength": 1},
+    "filename": {"type": "string", "minLength": 1},
+    "media_type": {"enum": ["image", "audio", "video"]},
+    "role": {"enum": ["Evidence", "Reference", "Control"]},
+    "size_bytes": {"type": "integer", "minimum": 0},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "hash_source": {"const": "client_declared"},
+    "registered_at": {"type": "string", "format": "date-time"},
+    "registered_by": {"type": "string", "minLength": 1},
+    "registered_by_verified": {"const": false},
+    "preserved": {"const": false},
+    "preserved_evidence_id": {"type": "null"},
+    "duplicate_hash_of": {"type": "array", "items": {"type": "string"}}
+  }
+}
