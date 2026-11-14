@@ -1,0 +1,3 @@
+import {translate} from '../../i18n';
+import type {RegionBox} from '../../viewer/regions';
+export function RegionOverlay({regions,selectedId,onSelect}:{regions:RegionBox[];selectedId:string|null;onSelect:(region:RegionBox)=>void}){return <div className="evidence-regions" aria-label={translate("Finding regions")}>{regions.map(region=><button key={region.id} className={`evidence-region ${region.tone} ${selectedId===region.id?'selected':''}`} style={{left:region.left,top:region.top,width:region.width,height:region.height}} aria-label={`${region.findingId}: ${region.label}`} onClick={()=>onSelect(region)}><span>{region.findingId} · {region.label}</span></button>)}</div>}

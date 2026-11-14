@@ -3,8 +3,8 @@ import {filterAndSortCases} from './caseView';
 import {CaseRecord} from '../model';
 
 const cases:CaseRecord[]=[
-  {id:'CASE-2',title:'Zulu',description:'',status:'Open',created:'2026-10-30T10:00:00Z'},
-  {id:'CASE-1',title:'Alpha',description:'',status:'Closed',created:'2026-10-29T10:00:00Z'},
+  {id:'CASE-2',title:'Zulu',description:'',status:'Open',created:'2026-10-30T10:00:00Z',createdAt:'2026-10-30T10:00:00Z',lastActivityAt:'2026-10-30T11:00:00Z'},
+  {id:'CASE-1',title:'Alpha',description:'',status:'Closed',created:'2026-10-29T10:00:00Z',createdAt:'2026-10-29T10:00:00Z',lastActivityAt:'2026-11-01T10:00:00Z'},
 ];
 
 describe('case list filtering and sorting',()=>{
@@ -12,4 +12,5 @@ describe('case list filtering and sorting',()=>{
   it('filters status',()=>expect(filterAndSortCases(cases,'','Open','newest').map(c=>c.id)).toEqual(['CASE-2']));
   it('sorts newest first by default choice',()=>expect(filterAndSortCases(cases,'','All','newest').map(c=>c.id)).toEqual(['CASE-2','CASE-1']));
   it('sorts by title',()=>expect(filterAndSortCases(cases,'','All','title').map(c=>c.title)).toEqual(['Alpha','Zulu']));
+  it('sorts by last activity in both directions',()=>{expect(filterAndSortCases(cases,'','All','activity_desc').map(c=>c.id)).toEqual(['CASE-1','CASE-2']);expect(filterAndSortCases(cases,'','All','activity_asc').map(c=>c.id)).toEqual(['CASE-2','CASE-1'])});
 });

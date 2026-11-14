@@ -18,4 +18,9 @@ describe('processing summary selector',()=>{
     expect(selectProcessingSummary([],[]).lastRunId).toBeNull();
   });
   it('preserves fixture provenance',()=>expect(selectProcessingSummary([evidence],[finding('completed',true)]).fixture).toBe(true));
+  it('does not present a finding group as an executed run',()=>{
+    const result=selectProcessingSummary([evidence],[finding('completed')],[]);
+    expect(result.lastRunId).toBeNull();
+    expect(result.channels.find(channel=>channel.channel==='synthetic_media')!.counts.completed).toBe(1);
+  });
 });

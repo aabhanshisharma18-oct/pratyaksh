@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "generated_from_existing_results": true,
+  "note": "No model rerun or new evaluation. Rows are actual classes; columns are predicted classes. Do not average these tasks into one project accuracy.",
+  "results": [
+    {
+      "id": "sbi-still-images",
+      "title": "SBI still-image pilot",
+      "source": "backend/evaluation/results/sbi-still-images-backbone-20261112/report.json",
+      "source_sha256": "f7d6396f80f05afb5bd1b2ee5744b90cf87d81cfe7eeb57cfcd9415d2f759fb9",
+      "positive_class": "synthetic/manipulated",
+      "selected": 1000,
+      "scored": 685,
+      "unscored": 315,
+      "threshold": 0.5533131957054138,
+      "confusion_matrix": {
+        "tp": 279,
+        "tn": 264,
+        "fp": 66,
+        "fn": 76
+      },
+      "accuracy": 0.7927007299270074,
+      "synthetic_recall": 0.7859154929577464,
+      "false_positive_rate": 0.2,
+      "notes": [
+        "Local still-image folder; upstream source and related identities remain unverified.",
+        "Test sample reused for model comparisons; not a fresh final holdout.",
+        "315/1000 selected images were unscored; matrix includes only 685 scored images.",
+        "Single-face pilot does not validate maximum-score decisions across multiple faces."
+      ]
+    },
+    {
+      "id": "ufd-genimage",
+      "title": "UniversalFakeDetect baseline",
+      "source": "backend/evaluation/results/whole-image-tiny-genimage-v1/report.json",
+      "source_sha256": "e4eab7ef287c7695c74dd8354e215e268bd9640c02aa67d76c791dfb82513c68",
+      "positive_class": "synthetic/manipulated",
+      "selected": 288,
+      "scored": 288,
+      "unscored": 0,
+      "threshold": 0.008743925020098686,
+      "confusion_matrix": {
+        "tp": 63,
+        "tn": 95,
+        "fp": 49,
+        "fn": 81
+      },
+      "accuracy": 0.5486111111111112,
+      "synthetic_recall": 0.4375,
+      "false_positive_rate": 0.3402777777777778,
+      "notes": [
+        "96 source images, each with original/JPEG/simulated-screenshot variants: 288 correlated inputs.",
+        "Midjourney excluded from the custom head training/development; official UFD training history is separate.",
+        "Development-selected cutoffs; this experiment is offline and not the live file verdict."
+      ]
+    },
+    {
+      "id": "clip-head-genimage",
+      "title": "Pratyaksh CLIP-head experiment",
+      "source": "backend/evaluation/results/whole-image-tiny-genimage-v1/report.json",
+      "source_sha256": "e4eab7ef287c7695c74dd8354e215e268bd9640c02aa67d76c791dfb82513c68",
+      "positive_class": "synthetic/manipulated",
+      "selected": 288,
+      "scored": 288,
+      "unscored": 0,
+      "threshold": 0.4485233724117279,
+      "confusion_matrix": {
+        "tp": 137,
+        "tn": 58,
+        "fp": 86,
+        "fn": 7
+      },
+      "accuracy": 0.6770833333333334,
+      "synthetic_recall": 0.9513888888888888,
+      "false_positive_rate": 0.5972222222222222,
+      "notes": [
+        "96 source images, each with original/JPEG/simulated-screenshot variants: 288 correlated inputs.",
+        "Midjourney excluded from the custom head training/development; official UFD training history is separate.",
+        "Development-selected cutoffs; this experiment is offline and not the live file verdict."
+      ]
+    },
+    {
+      "id": "aasist-asvspoof",
+      "title": "AASIST audio pilot",
+      "source": "backend/docs/ASVSPOOF2019_LA_PILOT_RESULTS.md",
+      "source_sha256": "1e83c57f67a33df8968cd4d1ba12eb12c6997de3e69a87ed5f1a5edb1a036dfd",
+      "positive_class": "synthetic/manipulated",
+      "selected": 4000,
+      "scored": 3973,
+      "unscored": 27,
+      "threshold": 0.5417414307594299,
+      "confusion_matrix": {
+        "tp": 1880,
+        "tn": 1998,
+        "fp": 2,
+        "fn": 93
+      },
+      "accuracy": 0.9760885980367481,
+      "synthetic_recall": 0.952863659401926,
+      "false_positive_rate": 0.001,
+      "notes": [
+        "Counts transcribed programmatically from the versioned pilot-results document; raw audio/predictions are local.",
+        "Pretrained AASIST evaluated on a balanced ASVspoof 2019 LA sample, not trained locally.",
+        "27 selected evaluation clips shorter than one second were rejected.",
+        "Result does not establish performance on every modern voice generator; live API remains an execution probe."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+.d5-workspace .paper {overflow-wrap:anywhere}
+.d5-workspace table {width:100%;border-collapse:collapse;font-size:12px}
+.d5-workspace th,.d5-workspace td {padding:8px;text-align:left;border-bottom:1px solid #dce2e7}
+.d5-workspace [role=alert] {color:#a32c2c}
+.d5-workspace .revision-history button {text-align:left}
+.d5-workspace button[aria-pressed=true] {font-weight:700;background:#e5f2ee;color:#163d35}
+@media print {
+ .d5-workspace .report-settings,.d5-workspace .preview-title {display:none!important}
+ .d5-workspace {display:block!important}
+ .d5-workspace .report-preview,.d5-workspace .paper {width:100%!important;max-width:none!important;margin:0!important;box-shadow:none!important}
+ .d5-workspace th {display:table-cell}
+ .d5-workspace tr {break-inside:avoid}
+ .app,.app-main,.app-main main,.d5-workspace,.d5-workspace .report-preview {
+  display:block!important;height:auto!important;max-height:none!important;overflow:visible!important
+ }
+ .skip-link {display:none!important}
+ .d5-workspace .paper {
+  min-height:0!important;padding:0!important;background:#fff!important;color:#172b35!important;
+  font-size:10pt;line-height:1.5;overflow:visible!important
+ }
+ /* Long findings and case-wide audit sections must span pages naturally. */
+ .d5-workspace .paper section {break-inside:auto;page-break-inside:auto}
+ .d5-workspace .paper h2 {font-size:20pt}
+ .d5-workspace .paper h2,.d5-workspace .paper h3,.d5-workspace .paper h4,
+ .d5-workspace .paper h5,.d5-workspace .paper dt {break-after:avoid;page-break-after:avoid}
+ .d5-workspace .paper p,.d5-workspace .paper dd {orphans:3;widows:3}
+ .d5-workspace .paper code {font-size:8.5pt;white-space:pre-wrap;overflow-wrap:anywhere}
+ .d5-workspace .paper table {table-layout:fixed;font-size:8.5pt}
+ .d5-workspace .paper thead {display:table-header-group}
+ .d5-workspace .paper th,.d5-workspace .paper td {overflow-wrap:anywhere;vertical-align:top}
+ .d5-workspace .paper .audit-event {break-inside:avoid;page-break-inside:avoid}
+ .d5-workspace .paper footer {overflow-wrap:anywhere;font-size:8pt}
+}
+
+.d5-workspace .finding-technical-appendix {border-left:2px solid #dce2e7;padding-left:12px;margin:12px 0}
+.d5-workspace .finding-technical-appendix dt {font-weight:600;font-size:12px;margin-top:6px}
+.d5-workspace .finding-technical-appendix dd {margin:2px 0;font-size:12px;white-space:pre-wrap}
+
+.d5-workspace .paper dd {margin-left:0;overflow-wrap:anywhere;white-space:pre-wrap}

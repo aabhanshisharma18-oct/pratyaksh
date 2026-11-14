@@ -1,5 +1,18 @@
 node_modules/
 dist/
+playwright-report/
+test-results/
+.e2e-tmp/
 .openai/*
 !.openai/hosting.json
 tmp/
+.env
+.env.*
+!.env.example
+.env.local
+
+# Local user-supplied phone photo and derived test files
+Pratyaksh-Phone-Provenance-Demo/
+
+# Finder metadata is local to each machine
+.DS_Store

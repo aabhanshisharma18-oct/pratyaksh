@@ -1,0 +1,22 @@
+import {useEffect,useMemo,useState} from 'react';
+import type {Finding,Note} from '../../model';
+import {createReviewApi} from '../../data/reviewApi';
+import {AsyncState} from '../AsyncState';
+import {useFormatters,useI18n} from '../../i18n';
+import './review.css';
+
+type Props={finding:Finding;notes:Note[];apiBaseUrl:string;onNotesChange:(findingId:string,notes:Note[])=>void};
+const draftKey=(id:string)=>`pratyaksh-note-draft:${id}`;
+const readDraft=(id:string)=>{try{return sessionStorage.getItem(draftKey(id))||''}catch{return''}};
+
+export function NotesPanel({finding,notes,apiBaseUrl,onNotesChange}:Props){
+ const{t}=useI18n(),{formatDate}=useFormatters();
+ const api=useMemo(()=>apiBaseUrl?createReviewApi(apiBaseUrl):null,[apiBaseUrl]);
+ const relevant=notes.filter(note=>note.findingId===finding.finding_id).sort((a,b)=>Date.parse(a.at)-Date.parse(b.at));
+ const[status,setStatus]=useState<'reviewed'|'questioned'>('reviewed');const[text,setText]=useState(()=>readDraft(finding.finding_id));const[loading,setLoading]=useState(Boolean(api));const[pending,setPending]=useState(false);const[error,setError]=useState('');const[reload,setReload]=useState(0);
+ useEffect(()=>{setText(readDraft(finding.finding_id))},[finding.finding_id]);
+ useEffect(()=>{try{if(text)sessionStorage.setItem(draftKey(finding.finding_id),text);else sessionStorage.removeItem(draftKey(finding.finding_id))}catch{}},[finding.finding_id,text]);
+ useEffect(()=>{if(!api){setLoading(false);return}const controller=new AbortController();setLoading(true);setError('');api.listNotes(finding.finding_id,controller.signal).then(value=>onNotesChange(finding.finding_id,value)).catch(err=>{if(!controller.signal.aborted)setError(err instanceof Error?err.message:t('findings.notesLoadError'))}).finally(()=>{if(!controller.signal.aborted)setLoading(false)});return()=>controller.abort()},[api,finding.finding_id,reload,t]);
+ async function submit(event:React.FormEvent){event.preventDefault();const value=text.trim();if(!value||pending)return;setPending(true);setError('');try{let next:Note;if(api)next=await api.createNote(finding.finding_id,{status,text:value});else next={id:`LOCAL-${Date.now()}-${Math.random().toString(16).slice(2)}`,findingId:finding.finding_id,text:value,status,at:new Date().toISOString(),author:'Demo analyst',authorVerified:false};onNotesChange(finding.finding_id,[...relevant,next]);setText('')}catch(err){setError(err instanceof Error?err.message:t('findings.noteSaveError'))}finally{setPending(false)}}
+ return <section className="notes-panel" aria-labelledby={`notes-${finding.finding_id}`}><div className="review-separation"><div><span>{t('findings.machineResult')}</span><strong>{finding.observation}</strong><small>{t('findings.automatedUnchanged')}</small></div><div><span>{t('findings.analystReview')}</span><strong>{relevant.at(-1)?.status==='questioned'?t('findings.questioned'):relevant.length?t('findings.reviewed'):t('findings.unreviewed')}</strong><small>{api?t('findings.persistentRecords'):t('findings.browserRecords')}</small></div></div><h5 id={`notes-${finding.finding_id}`}>{t('findings.reviewerNotes')}</h5>{loading?<AsyncState state="loading" message={t('findings.loadingNotes')}/>:error?<AsyncState state="error" message={t('findings.draftPreserved',{error})} onRetry={()=>setReload(value=>value+1)}/>:relevant.length?<ol className="notes-list">{relevant.map(note=><li key={note.id}><div><strong>{note.status==='reviewed'?t('findings.reviewed'):t('findings.questioned')}</strong><time dateTime={note.at} title={note.at} aria-label={t('findings.serverTimestamp',{timestamp:note.at})}>{formatDate(note.at)}</time></div><p>{note.text}</p><small>{note.author} · {t('findings.selfDeclared')}{note.legacy?` · ${t('findings.browserOnlySuffix')}`:''}</small></li>)}</ol>:<AsyncState state="empty" message={t('findings.noNotes')}/>}<form onSubmit={submit}><label>{t('findings.status')}<select value={status} onChange={event=>setStatus(event.target.value as 'reviewed'|'questioned')}><option value="reviewed">{t('findings.reviewed')}</option><option value="questioned">{t('findings.questioned')}</option></select></label><label>{t('findings.note')}<textarea maxLength={2000} required value={text} onChange={event=>setText(event.target.value)} placeholder={t('findings.recordNote')}/></label><button className="button secondary" disabled={pending||!text.trim()}>{pending?t('findings.saving'):t('findings.addNote')}</button></form></section>
+}

@@ -1,0 +1,2 @@
+import {describe,expect,it} from 'vitest';import {safeDownloadName} from '../model';
+describe('safe output names',()=>{it('strips path separators, controls and hostile markup characters',()=>{for(const value of ['<img src=x onerror=alert(1)>.png','\"><script>','../secret\u0000.json','x'.repeat(500)]){const result=safeDownloadName(value);expect(result).not.toMatch(/[\\/:*?"<>|\x00-\x1f\x7f]/);expect(result.length).toBeLessThanOrEqual(180);expect(result.length).toBeGreaterThan(0)}})});

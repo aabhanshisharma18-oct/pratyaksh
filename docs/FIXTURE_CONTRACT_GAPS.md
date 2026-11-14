@@ -53,3 +53,31 @@ evaluation results. They load only when `VITE_DEV_FIXTURE=true` and API mode is
 off. Missing credentials remain neutral; an integrity mismatch means only that
 bytes differ from a declared reference. Neither state establishes authenticity,
 manipulation, attribution, preservation, or chain of custody.
+
+## Job-status additions requiring contract-owner confirmation
+
+The dashboard run 1.1 contract now accepts optional `attempt`, `retry_of`,
+`origin`, `requested_channels`, `status_reason`, and `configuration_version`
+fields. They are dashboard-only retry and presentation metadata; the teammate-
+owned D1 contracts remain unchanged. Existing fixtures remain valid without
+these fields.
+
+The D1 status `unavailable` is adapted to dashboard `unsupported` with
+`status_reason: capability_unavailable`, while the original value is retained
+as `backend_status`. This is an explicit vocabulary mapping, not an assertion
+that the two meanings are identical. Unknown backend statuses are displayed as
+failed with `unknown_backend_status` and are never treated as a result.
+
+Retry is a new immutable run: it references the prior run with `retry_of`,
+increments `attempt`, and does not copy findings, errors, artifacts, coverage,
+or lifecycle timestamps. Partial retries are full-channel runs in this phase.
+
+### Backend proposal (out of scope here)
+
+A production service should provide immutable run create/list/get endpoints,
+idempotency for duplicate submissions, status/cancellation transitions, and
+polling or SSE updates. It should retain the uploaded evidence under an explicit
+preservation policy before advertising retry availability. The current D1
+analysis endpoints are synchronous and the case service retains inventory
+metadata only, so API mode has no historical run list after refresh. No client
+simulation is used as fallback after a server error.

@@ -1,0 +1,1774 @@
+{
+  "analysis_id": "PROV-cca3a1f36f0b45b3933bfbeeac660da9",
+  "analyzed_at": "2026-11-12T15:08:02.346948+00:00",
+  "case": {
+    "analyst": "Demo analyst",
+    "analyst_identity": "Self-declared",
+    "id": "CASE-PROV-DEMO-01",
+    "title": "Eight-file synthetic demonstration; phone-original photo pending"
+  },
+  "compared_pairs": 28,
+  "exact_duplicate_groups": [
+    [
+      "IMG-01",
+      "IMG-02"
+    ]
+  ],
+  "images": [
+    {
+      "content_credentials": {
+        "actions": [
+          {
+            "action": "c2pa.created",
+            "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+            "softwareAgent": {
+              "name": "ChatGPT",
+              "version": "gpt-image"
+            },
+            "when": "2026-11-12T06:11:44.650453961Z"
+          },
+          {
+            "action": "c2pa.converted",
+            "when": "2026-11-12T06:11:44.650459485Z"
+          },
+          {
+            "action": "c2pa.watermarked.unbound",
+            "when": "2026-11-12T06:11:44.645219368Z"
+          }
+        ],
+        "active_manifest": "urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1",
+        "content_binding": "valid",
+        "creator_assertions": [],
+        "manifest_digests": {
+          "urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1": "d718fbac2678781eede9ee4bf42ce2daae3657922849d2875f2c27914def49fa"
+        },
+        "manifest_labels": [
+          "urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1"
+        ],
+        "network_policy": "Remote manifest and OCSP fetching disabled; trust depends on local validator configuration.",
+        "observation": "Embedded Content Credentials inspected locally. Review signature, file binding and trust separately.",
+        "signature": "valid",
+        "signer": {
+          "alg": "Es256",
+          "cert_serial_number": "471440979205905794604524502504016020624908622401",
+          "common_name": "OpenAI Media Service",
+          "issuer": "OpenAI OpCo, LLC",
+          "time": "2026-11-12T06:11:44.675790+00:00"
+        },
+        "signer_trust": "untrusted",
+        "status": "present",
+        "tools": [
+          {
+            "icon": {
+              "format": "image/svg+xml",
+              "identifier": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.icon"
+            },
+            "name": "OpenAI Media Service API",
+            "org.contentauth.c2pa_rs": "0.79.2",
+            "specVersion": "2.2.0"
+          }
+        ],
+        "validation_results": {
+          "failure": [
+            {
+              "code": "signingCredential.untrusted",
+              "explanation": "signing certificate untrusted",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            },
+            {
+              "code": "signingCredential.invalid",
+              "explanation": "certificate missing required EKU",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            }
+          ],
+          "informational": [
+            {
+              "code": "timeStamp.untrusted",
+              "explanation": "timestamp cert untrusted: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            }
+          ],
+          "success": [
+            {
+              "code": "timeStamp.validated",
+              "explanation": "timestamp message digest matched: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.insideValidity",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.validated",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.icon",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.icon"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.actions.v2"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.hash.data"
+            },
+            {
+              "code": "assertion.dataHash.match",
+              "explanation": "data hash valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.hash.data"
+            }
+          ]
+        },
+        "validation_state": "Invalid",
+        "validation_status": [
+          {
+            "code": "signingCredential.untrusted",
+            "explanation": "signing certificate untrusted",
+            "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+          },
+          {
+            "code": "signingCredential.invalid",
+            "explanation": "certificate missing required EKU",
+            "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+          }
+        ]
+      },
+      "detector_signals": [],
+      "dhash": "646674342c38283f",
+      "filename": "A-synthetic-base.png",
+      "format": "PNG",
+      "height": 1024,
+      "id": "IMG-01",
+      "media_type": "image",
+      "metadata": {
+        "ImageHeight": "1024",
+        "ImageWidth": "1536"
+      },
+      "metadata_flags": [],
+      "metadata_method": "ExifTool",
+      "metadata_status": "Information recorded in the file; origin and timestamps are unverified.",
+      "sha256": "d893ae11b5978fd0110906f8fef8f386acc540bde78b334661dd4b69f238c2b4",
+      "size_bytes": 2447694,
+      "source_observation": "The file provides no readable camera make or model.",
+      "width": 1536
+    },
+    {
+      "content_credentials": {
+        "actions": [
+          {
+            "action": "c2pa.created",
+            "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+            "softwareAgent": {
+              "name": "ChatGPT",
+              "version": "gpt-image"
+            },
+            "when": "2026-11-12T06:11:44.650453961Z"
+          },
+          {
+            "action": "c2pa.converted",
+            "when": "2026-11-12T06:11:44.650459485Z"
+          },
+          {
+            "action": "c2pa.watermarked.unbound",
+            "when": "2026-11-12T06:11:44.645219368Z"
+          }
+        ],
+        "active_manifest": "urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1",
+        "content_binding": "valid",
+        "creator_assertions": [],
+        "manifest_digests": {
+          "urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1": "d718fbac2678781eede9ee4bf42ce2daae3657922849d2875f2c27914def49fa"
+        },
+        "manifest_labels": [
+          "urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1"
+        ],
+        "network_policy": "Remote manifest and OCSP fetching disabled; trust depends on local validator configuration.",
+        "observation": "Embedded Content Credentials inspected locally. Review signature, file binding and trust separately.",
+        "signature": "valid",
+        "signer": {
+          "alg": "Es256",
+          "cert_serial_number": "471440979205905794604524502504016020624908622401",
+          "common_name": "OpenAI Media Service",
+          "issuer": "OpenAI OpCo, LLC",
+          "time": "2026-11-12T06:11:44.675790+00:00"
+        },
+        "signer_trust": "untrusted",
+        "status": "present",
+        "tools": [
+          {
+            "icon": {
+              "format": "image/svg+xml",
+              "identifier": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.icon"
+            },
+            "name": "OpenAI Media Service API",
+            "org.contentauth.c2pa_rs": "0.79.2",
+            "specVersion": "2.2.0"
+          }
+        ],
+        "validation_results": {
+          "failure": [
+            {
+              "code": "signingCredential.untrusted",
+              "explanation": "signing certificate untrusted",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            },
+            {
+              "code": "signingCredential.invalid",
+              "explanation": "certificate missing required EKU",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            }
+          ],
+          "informational": [
+            {
+              "code": "timeStamp.untrusted",
+              "explanation": "timestamp cert untrusted: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            }
+          ],
+          "success": [
+            {
+              "code": "timeStamp.validated",
+              "explanation": "timestamp message digest matched: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.insideValidity",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.validated",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.icon",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.icon"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.actions.v2"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.hash.data"
+            },
+            {
+              "code": "assertion.dataHash.match",
+              "explanation": "data hash valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.assertions/c2pa.hash.data"
+            }
+          ]
+        },
+        "validation_state": "Invalid",
+        "validation_status": [
+          {
+            "code": "signingCredential.untrusted",
+            "explanation": "signing certificate untrusted",
+            "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+          },
+          {
+            "code": "signingCredential.invalid",
+            "explanation": "certificate missing required EKU",
+            "url": "self#jumbf=/c2pa/urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1/c2pa.signature"
+          }
+        ]
+      },
+      "detector_signals": [],
+      "dhash": "646674342c38283f",
+      "filename": "B-exact-copy.png",
+      "format": "PNG",
+      "height": 1024,
+      "id": "IMG-02",
+      "media_type": "image",
+      "metadata": {
+        "ImageHeight": "1024",
+        "ImageWidth": "1536"
+      },
+      "metadata_flags": [],
+      "metadata_method": "ExifTool",
+      "metadata_status": "Information recorded in the file; origin and timestamps are unverified.",
+      "sha256": "d893ae11b5978fd0110906f8fef8f386acc540bde78b334661dd4b69f238c2b4",
+      "size_bytes": 2447694,
+      "source_observation": "The file provides no readable camera make or model.",
+      "width": 1536
+    },
+    {
+      "content_credentials": {
+        "actions": [
+          {
+            "action": "c2pa.created",
+            "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+            "softwareAgent": {
+              "name": "ChatGPT",
+              "version": "gpt-image"
+            },
+            "when": "2026-11-12T06:12:33.033088815Z"
+          },
+          {
+            "action": "c2pa.converted",
+            "when": "2026-11-12T06:12:33.033092938Z"
+          },
+          {
+            "action": "c2pa.watermarked.unbound",
+            "when": "2026-11-12T06:12:33.032293385Z"
+          }
+        ],
+        "active_manifest": "urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334",
+        "content_binding": "valid",
+        "creator_assertions": [],
+        "manifest_digests": {
+          "urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334": "bd46688e6d960fa3ad2e861da12263b7bbc18946f0a6a1d7ff2a5e0320f0a334"
+        },
+        "manifest_labels": [
+          "urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334"
+        ],
+        "network_policy": "Remote manifest and OCSP fetching disabled; trust depends on local validator configuration.",
+        "observation": "Embedded Content Credentials inspected locally. Review signature, file binding and trust separately.",
+        "signature": "valid",
+        "signer": {
+          "alg": "Ps256",
+          "cert_serial_number": "15483366567143162630298612244848338035",
+          "common_name": "OpenAI Media Service",
+          "issuer": "OpenAI OpCo, LLC",
+          "time": "2026-11-12T06:12:33.052822+00:00"
+        },
+        "signer_trust": "untrusted",
+        "status": "present",
+        "tools": [
+          {
+            "icon": {
+              "format": "image/svg+xml",
+              "identifier": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.assertions/c2pa.icon"
+            },
+            "name": "OpenAI Media Service API",
+            "org.contentauth.c2pa_rs": "0.79.2",
+            "specVersion": "2.2.0"
+          }
+        ],
+        "validation_results": {
+          "failure": [
+            {
+              "code": "signingCredential.untrusted",
+              "explanation": "signing certificate untrusted",
+              "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.signature"
+            }
+          ],
+          "informational": [
+            {
+              "code": "timeStamp.untrusted",
+              "explanation": "timestamp cert untrusted: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.signature"
+            }
+          ],
+          "success": [
+            {
+              "code": "timeStamp.validated",
+              "explanation": "timestamp message digest matched: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.insideValidity",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.validated",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.signature"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.icon",
+              "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.assertions/c2pa.icon"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
+              "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.assertions/c2pa.actions.v2"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+              "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.assertions/c2pa.hash.data"
+            },
+            {
+              "code": "assertion.dataHash.match",
+              "explanation": "data hash valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.assertions/c2pa.hash.data"
+            }
+          ]
+        },
+        "validation_state": "Valid",
+        "validation_status": [
+          {
+            "code": "signingCredential.untrusted",
+            "explanation": "signing certificate untrusted",
+            "url": "self#jumbf=/c2pa/urn:c2pa:dfc6897c-561f-41ca-bac7-6759e8e08334/c2pa.signature"
+          }
+        ]
+      },
+      "detector_signals": [],
+      "dhash": "2e3b5b1b6d1b1d9d",
+      "filename": "C-cropped-view.png",
+      "format": "PNG",
+      "height": 1448,
+      "id": "IMG-03",
+      "media_type": "image",
+      "metadata": {
+        "ImageHeight": "1448",
+        "ImageWidth": "1086"
+      },
+      "metadata_flags": [],
+      "metadata_method": "ExifTool",
+      "metadata_status": "Information recorded in the file; origin and timestamps are unverified.",
+      "sha256": "2bd43f4a41261f2cf0349d22b4bf2fe75334c33a2b307b67f5059ffa1efa29d3",
+      "size_bytes": 2222433,
+      "source_observation": "The file provides no readable camera make or model.",
+      "width": 1086
+    },
+    {
+      "content_credentials": {
+        "actions": [
+          {
+            "action": "c2pa.created",
+            "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+            "softwareAgent": {
+              "name": "ChatGPT",
+              "version": "gpt-image"
+            },
+            "when": "2026-11-12T06:13:57.217812714Z"
+          },
+          {
+            "action": "c2pa.converted",
+            "when": "2026-11-12T06:13:57.217814145Z"
+          },
+          {
+            "action": "c2pa.watermarked.unbound",
+            "when": "2026-11-12T06:13:57.216334542Z"
+          }
+        ],
+        "active_manifest": "urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2",
+        "content_binding": "valid",
+        "creator_assertions": [],
+        "manifest_digests": {
+          "urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2": "fd591908e4eb436f0968e2087ba0a7dfdacea7e5441c178a1bfdea030e9579df"
+        },
+        "manifest_labels": [
+          "urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2"
+        ],
+        "network_policy": "Remote manifest and OCSP fetching disabled; trust depends on local validator configuration.",
+        "observation": "Embedded Content Credentials inspected locally. Review signature, file binding and trust separately.",
+        "signature": "valid",
+        "signer": {
+          "alg": "Es256",
+          "cert_serial_number": "471440979205905794604524502504016020624908622401",
+          "common_name": "OpenAI Media Service",
+          "issuer": "OpenAI OpCo, LLC",
+          "time": "2026-11-12T06:13:57.238967+00:00"
+        },
+        "signer_trust": "untrusted",
+        "status": "present",
+        "tools": [
+          {
+            "icon": {
+              "format": "image/svg+xml",
+              "identifier": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.assertions/c2pa.icon"
+            },
+            "name": "OpenAI Media Service API",
+            "org.contentauth.c2pa_rs": "0.79.2",
+            "specVersion": "2.2.0"
+          }
+        ],
+        "validation_results": {
+          "failure": [
+            {
+              "code": "signingCredential.untrusted",
+              "explanation": "signing certificate untrusted",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.signature"
+            },
+            {
+              "code": "signingCredential.invalid",
+              "explanation": "certificate missing required EKU",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.signature"
+            }
+          ],
+          "informational": [
+            {
+              "code": "timeStamp.untrusted",
+              "explanation": "timestamp cert untrusted: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.signature"
+            }
+          ],
+          "success": [
+            {
+              "code": "timeStamp.validated",
+              "explanation": "timestamp message digest matched: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.insideValidity",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.validated",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.signature"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.icon",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.assertions/c2pa.icon"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.assertions/c2pa.actions.v2"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.assertions/c2pa.hash.data"
+            },
+            {
+              "code": "assertion.dataHash.match",
+              "explanation": "data hash valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.assertions/c2pa.hash.data"
+            }
+          ]
+        },
+        "validation_state": "Invalid",
+        "validation_status": [
+          {
+            "code": "signingCredential.untrusted",
+            "explanation": "signing certificate untrusted",
+            "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.signature"
+          },
+          {
+            "code": "signingCredential.invalid",
+            "explanation": "certificate missing required EKU",
+            "url": "self#jumbf=/c2pa/urn:c2pa:ee674895-e7b1-41f2-a8fa-e2958cfdf0a2/c2pa.signature"
+          }
+        ]
+      },
+      "detector_signals": [],
+      "dhash": "e46674342c38283f",
+      "filename": "D-text-added.png",
+      "format": "PNG",
+      "height": 1024,
+      "id": "IMG-04",
+      "media_type": "image",
+      "metadata": {
+        "ImageHeight": "1024",
+        "ImageWidth": "1536"
+      },
+      "metadata_flags": [],
+      "metadata_method": "ExifTool",
+      "metadata_status": "Information recorded in the file; origin and timestamps are unverified.",
+      "sha256": "07072addeeef933fe66e59e7f69a473ffd8b7f3b511f0e13d28e5f16d0930852",
+      "size_bytes": 2131437,
+      "source_observation": "The file provides no readable camera make or model.",
+      "width": 1536
+    },
+    {
+      "content_credentials": {
+        "actions": [
+          {
+            "action": "c2pa.created",
+            "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+            "softwareAgent": {
+              "name": "ChatGPT",
+              "version": "gpt-image"
+            },
+            "when": "2026-11-12T06:13:23.286835516Z"
+          },
+          {
+            "action": "c2pa.converted",
+            "when": "2026-11-12T06:13:23.286839477Z"
+          },
+          {
+            "action": "c2pa.watermarked.unbound",
+            "when": "2026-11-12T06:13:23.282537788Z"
+          }
+        ],
+        "active_manifest": "urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa",
+        "content_binding": "valid",
+        "creator_assertions": [],
+        "manifest_digests": {
+          "urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa": "7d807582d766e3823bee0cfafc0d1d0bb999bfc4fe66cd4e9d05e70a7958daea"
+        },
+        "manifest_labels": [
+          "urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa"
+        ],
+        "network_policy": "Remote manifest and OCSP fetching disabled; trust depends on local validator configuration.",
+        "observation": "Embedded Content Credentials inspected locally. Review signature, file binding and trust separately.",
+        "signature": "valid",
+        "signer": {
+          "alg": "Ps256",
+          "cert_serial_number": "15483366567143162630298612244848338035",
+          "common_name": "OpenAI Media Service",
+          "issuer": "OpenAI OpCo, LLC",
+          "time": "2026-11-12T06:13:23.309009+00:00"
+        },
+        "signer_trust": "untrusted",
+        "status": "present",
+        "tools": [
+          {
+            "icon": {
+              "format": "image/svg+xml",
+              "identifier": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.assertions/c2pa.icon"
+            },
+            "name": "OpenAI Media Service API",
+            "org.contentauth.c2pa_rs": "0.79.2",
+            "specVersion": "2.2.0"
+          }
+        ],
+        "validation_results": {
+          "failure": [
+            {
+              "code": "signingCredential.untrusted",
+              "explanation": "signing certificate untrusted",
+              "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.signature"
+            }
+          ],
+          "informational": [
+            {
+              "code": "timeStamp.untrusted",
+              "explanation": "timestamp cert untrusted: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.signature"
+            }
+          ],
+          "success": [
+            {
+              "code": "timeStamp.validated",
+              "explanation": "timestamp message digest matched: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.insideValidity",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.validated",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.signature"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.icon",
+              "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.assertions/c2pa.icon"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
+              "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.assertions/c2pa.actions.v2"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+              "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.assertions/c2pa.hash.data"
+            },
+            {
+              "code": "assertion.dataHash.match",
+              "explanation": "data hash valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.assertions/c2pa.hash.data"
+            }
+          ]
+        },
+        "validation_state": "Valid",
+        "validation_status": [
+          {
+            "code": "signingCredential.untrusted",
+            "explanation": "signing certificate untrusted",
+            "url": "self#jumbf=/c2pa/urn:c2pa:e2d40cfc-716d-4971-97f7-d8b087e722aa/c2pa.signature"
+          }
+        ]
+      },
+      "detector_signals": [],
+      "dhash": "646674342e38283f",
+      "filename": "E-face-edited.png",
+      "format": "PNG",
+      "height": 1024,
+      "id": "IMG-05",
+      "media_type": "image",
+      "metadata": {
+        "ImageHeight": "1024",
+        "ImageWidth": "1536"
+      },
+      "metadata_flags": [],
+      "metadata_method": "ExifTool",
+      "metadata_status": "Information recorded in the file; origin and timestamps are unverified.",
+      "sha256": "f569b0b1af83a16d44227700b3c7929582cc2d6e9923f65a62d4276e0b87cd2d",
+      "size_bytes": 2236274,
+      "source_observation": "The file provides no readable camera make or model.",
+      "width": 1536
+    },
+    {
+      "content_credentials": {
+        "content_binding": "not_present",
+        "observation": "No Content Credentials found. Absence alone does not establish whether this file is genuine or fake.",
+        "signature": "not_present",
+        "signer_trust": "not_present",
+        "status": "absent"
+      },
+      "detector_signals": [],
+      "dhash": "646674342c38283f",
+      "filename": "F-resaved-no-credentials.jpg",
+      "format": "JPEG",
+      "height": 1024,
+      "id": "IMG-06",
+      "media_type": "image",
+      "metadata": {
+        "ImageHeight": "1024",
+        "ImageWidth": "1536"
+      },
+      "metadata_flags": [],
+      "metadata_method": "ExifTool",
+      "metadata_status": "Information recorded in the file; origin and timestamps are unverified.",
+      "sha256": "5d540a1569372a8fb58b73f244ee4d0c5ceb5b4a23b04f3a9e8810187a00a7ba",
+      "size_bytes": 145958,
+      "source_observation": "The file provides no readable camera make or model.",
+      "width": 1536
+    },
+    {
+      "content_credentials": {
+        "content_binding": "not_present",
+        "observation": "No Content Credentials found. Absence alone does not establish whether this file is genuine or fake.",
+        "signature": "not_present",
+        "signer_trust": "not_present",
+        "status": "absent"
+      },
+      "detector_signals": [],
+      "dhash": "7a6b526d5b7a7664",
+      "filename": "G-unrelated-app-screenshot.png",
+      "format": "PNG",
+      "height": 6494,
+      "id": "IMG-07",
+      "media_type": "image",
+      "metadata": {
+        "ImageHeight": "6494",
+        "ImageWidth": "1440"
+      },
+      "metadata_flags": [],
+      "metadata_method": "ExifTool",
+      "metadata_status": "Information recorded in the file; origin and timestamps are unverified.",
+      "sha256": "c34ab841a59a541c0d3c7d46c1a5bf912c2c6bafe73765f9243848468a9aca72",
+      "size_bytes": 875102,
+      "source_observation": "The file provides no readable camera make or model.",
+      "width": 1440
+    },
+    {
+      "content_credentials": {
+        "actions": [
+          {
+            "action": "c2pa.created",
+            "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia",
+            "softwareAgent": {
+              "name": "ChatGPT",
+              "version": "gpt-image"
+            },
+            "when": "2026-11-12T15:02:18.205099253Z"
+          },
+          {
+            "action": "c2pa.converted",
+            "when": "2026-11-12T15:02:18.205102440Z"
+          },
+          {
+            "action": "c2pa.watermarked.unbound",
+            "when": "2026-11-12T15:02:18.202492988Z"
+          }
+        ],
+        "active_manifest": "urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89",
+        "content_binding": "valid",
+        "creator_assertions": [],
+        "manifest_digests": {
+          "urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89": "52e2fa25581e4b8128b78f77dff2e0d94654efe5aabbe07ca9802d42335a51b6"
+        },
+        "manifest_labels": [
+          "urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89"
+        ],
+        "network_policy": "Remote manifest and OCSP fetching disabled; trust depends on local validator configuration.",
+        "observation": "Embedded Content Credentials inspected locally. Review signature, file binding and trust separately.",
+        "signature": "valid",
+        "signer": {
+          "alg": "Ps256",
+          "cert_serial_number": "15483366567143162630298612244848338035",
+          "common_name": "OpenAI Media Service",
+          "issuer": "OpenAI OpCo, LLC",
+          "time": "2026-11-12T15:02:18.232451+00:00"
+        },
+        "signer_trust": "untrusted",
+        "status": "present",
+        "tools": [
+          {
+            "icon": {
+              "format": "image/svg+xml",
+              "identifier": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.assertions/c2pa.icon"
+            },
+            "name": "OpenAI Media Service API",
+            "org.contentauth.c2pa_rs": "0.79.2",
+            "specVersion": "2.2.0"
+          }
+        ],
+        "validation_results": {
+          "failure": [
+            {
+              "code": "signingCredential.untrusted",
+              "explanation": "signing certificate untrusted",
+              "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.signature"
+            }
+          ],
+          "informational": [
+            {
+              "code": "timeStamp.untrusted",
+              "explanation": "timestamp cert untrusted: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.signature"
+            }
+          ],
+          "success": [
+            {
+              "code": "timeStamp.validated",
+              "explanation": "timestamp message digest matched: OpenAI TSA Leaf",
+              "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.insideValidity",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.signature"
+            },
+            {
+              "code": "claimSignature.validated",
+              "explanation": "claim signature valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.signature"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.icon",
+              "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.assertions/c2pa.icon"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.actions.v2",
+              "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.assertions/c2pa.actions.v2"
+            },
+            {
+              "code": "assertion.hashedURI.match",
+              "explanation": "hashed uri matched: self#jumbf=c2pa.assertions/c2pa.hash.data",
+              "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.assertions/c2pa.hash.data"
+            },
+            {
+              "code": "assertion.dataHash.match",
+              "explanation": "data hash valid",
+              "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.assertions/c2pa.hash.data"
+            }
+          ]
+        },
+        "validation_state": "Valid",
+        "validation_status": [
+          {
+            "code": "signingCredential.untrusted",
+            "explanation": "signing certificate untrusted",
+            "url": "self#jumbf=/c2pa/urn:c2pa:b2ba7672-83ae-4758-b309-af678bf71b89/c2pa.signature"
+          }
+        ]
+      },
+      "detector_signals": [
+        {
+          "category": "synthetic_media",
+          "evidence_id": "IMG-08",
+          "execution_status": "completed",
+          "finding_id": "F-a905080820d14f93a5581a82cee7ee8d",
+          "fixture": false,
+          "limitations": [
+            "Candidate whole-image AI-generation detector; it is not a face-swap specialist or an authentication method.",
+            "Not evaluated on the Pratyaksh held-out dataset; the score is not a calibrated probability of authenticity.",
+            "The method can miss unseen generators and can flag genuine images after resizing, compression or editing.",
+            "The complete image is center-cropped to 224 x 224 using the official evaluation preprocessing; no region is localized."
+          ],
+          "location": null,
+          "method": "WisconsinAIVision/UniversalFakeDetect CLIP:ViT-L/14",
+          "method_version": "030495aea3300a8b54c0ec37ec7fe1dd7e63c619",
+          "observation": "Day 2-3 candidate image model ran; project validation is required.",
+          "result": "inconclusive",
+          "review_status": "unreviewed",
+          "run_id": "RUN-736a159071dc417ca1a915b9c1ea276f",
+          "schema_version": "1.0",
+          "scope": "Whole decoded image; no region localization",
+          "score": {
+            "calibration_status": "Not calibrated on project data",
+            "interpretation": "Sigmoid classifier output, not probability that evidence is fake",
+            "positive_class": "Deepfake",
+            "range": [
+              0,
+              1
+            ],
+            "value": 0.03643985092639923
+          },
+          "support_refs": []
+        },
+        {
+          "category": "synthetic_media",
+          "evidence_id": "IMG-08",
+          "execution_status": "completed",
+          "finding_id": "F-0c8b5417de1e4de7917e040f1f0e5f31",
+          "fixture": false,
+          "limitations": [
+            "Research-only candidate; its checkpoint licence does not permit commercial use.",
+            "The SBI checkpoint was trained on FaceForensics++ c23 and can miss unseen manipulation methods.",
+            "YuNet replaces the RetinaFace extractor used in the original SBI evaluation, so project evaluation is required.",
+            "A low signal is not proof that a face is genuine; compression, scaling and small faces can remove forensic traces.",
+            "Fine-tuned on cleaned still-image face crops; test coverage was 68.5%. Multi-face maximum-score decisions were not evaluated.",
+            "Related identities across splits remain unverified, and the test sample was reused for model comparisons."
+          ],
+          "location": null,
+          "method": "SBI EfficientNet-B4 (Pratyaksh still-image pilot)",
+          "method_version": "pratyaksh-still-images-backbone-20261112",
+          "observation": "No face was detected; no face-forgery score was produced.",
+          "result": "inconclusive",
+          "review_status": "unreviewed",
+          "run_id": "RUN-736a159071dc417ca1a915b9c1ea276f",
+          "schema_version": "1.0",
+          "scope": "YuNet-detected face crops; maximum face signal reported",
+          "score": null,
+          "support_refs": []
+        }
+      ],
+      "dhash": "e2c0c8c0b838188c",
+      "filename": "H-independent-ai-scene.png",
+      "format": "PNG",
+      "height": 1024,
+      "id": "IMG-08",
+      "media_type": "image",
+      "metadata": {
+        "ImageHeight": "1024",
+        "ImageWidth": "1536"
+      },
+      "metadata_flags": [],
+      "metadata_method": "ExifTool",
+      "metadata_status": "Information recorded in the file; origin and timestamps are unverified.",
+      "sha256": "ea95cbc339eaed4d4510bf2996244663bb5d23493a4e68d8ecce37dba7ae9dcd",
+      "size_bytes": 2463360,
+      "source_observation": "The file provides no readable camera make or model.",
+      "width": 1536
+    }
+  ],
+  "integrity": {
+    "anchor_hash": "55fc1a2127df0b1e31d2380c41df3c6de4928725f892b3249c46d93d5bf4ce49",
+    "anchor_sequence": 10,
+    "limitations": "Hash chaining detects edits against a retained anchor. A privileged attacker can rewrite the entire chain unless an external anchor is retained.",
+    "log_scope": "Provenance intake, analysis and export events. Operational case activity is maintained separately.",
+    "storage": "Original files stored read-only, keyed by SHA-256."
+  },
+  "limitations": [
+    "Connections describe matching content. They do not identify an original uploader or establish editing order.",
+    "A visual match can involve shared background or objects; it does not authenticate a face.",
+    "No match means this method found insufficient support, rather than proving the files are unrelated.",
+    "Metadata can be changed or stripped. Recorded device and software names are unverified claims.",
+    "Credentials describe signed assertions. Signature validity, content binding and signer trust are reported separately.",
+    "Recompression, screenshots and heavy edits can strip metadata and weaken matching.",
+    "Difference overlays include alignment error, compression and lighting changes as well as possible edits.",
+    "This report supports evidence-handling review. It provides no legal admissibility decision."
+  ],
+  "methods": {
+    "credential_validator": "c2pa-python (offline)",
+    "hash": "SHA-256",
+    "metadata": "ExifTool with Pillow image fallback; ffprobe for audio",
+    "opencv_version": "4.14.0",
+    "pillow_version": "12.3.0",
+    "python_version": "3.13.9",
+    "visual": "dHash candidates; SIFT + RANSAC with expanded crop search"
+  },
+  "parent_analysis_id": "PROV-550f717155574880b5498086a435c2ae",
+  "relationships": [
+    {
+      "explanation": "The SHA-256 hashes match. These files contain exactly the same bytes.",
+      "id": "REL-001",
+      "kind": "exact_copy",
+      "left_id": "IMG-01",
+      "right_id": "IMG-02",
+      "support": null
+    },
+    {
+      "explanation": "Possible relation supported by 56 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-002",
+      "kind": "matching_content",
+      "left_id": "IMG-01",
+      "right_id": "IMG-03",
+      "support": {
+        "candidate_features": 112,
+        "candidate_search": "Expanded region search for possible crops despite different global hashes",
+        "geometric_inlier_ratio": 0.5,
+        "hash_distance": 30,
+        "homography": [
+          [
+            1.7215868217575663,
+            0.0044404659859685345,
+            -228.27987619688332
+          ],
+          [
+            -0.021120561281294005,
+            1.7524803862138898,
+            -243.48162120457826
+          ],
+          [
+            -5.072216277978196e-05,
+            -7.314228329324648e-06,
+            0.9999999999999999
+          ]
+        ],
+        "left_coverage": 0.0347,
+        "left_region": [
+          0.2647,
+          0.257,
+          0.4585,
+          0.5509
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 56,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.0993,
+        "right_region": [
+          0.3602,
+          0.0931,
+          0.826,
+          0.4432
+        ],
+        "right_size": [
+          900,
+          1200
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 1100 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-003",
+      "kind": "matching_content",
+      "left_id": "IMG-01",
+      "right_id": "IMG-04",
+      "support": {
+        "candidate_features": 1110,
+        "candidate_search": "dHash distance <= 10",
+        "geometric_inlier_ratio": 0.991,
+        "hash_distance": 1,
+        "homography": [
+          [
+            0.9994641689570933,
+            -0.0004199070208430409,
+            0.0557355798897988
+          ],
+          [
+            -0.00018001769697321176,
+            0.9991421330747269,
+            0.25099677817907423
+          ],
+          [
+            -4.1191328501584607e-07,
+            -3.4981389196245454e-07,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.8566,
+        "left_region": [
+          0.007,
+          0.1124,
+          0.9969,
+          0.9927
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 1100,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.8569,
+        "right_region": [
+          0.0067,
+          0.1118,
+          0.9973,
+          0.9926
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 1165 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-004",
+      "kind": "matching_content",
+      "left_id": "IMG-01",
+      "right_id": "IMG-05",
+      "support": {
+        "candidate_features": 1180,
+        "candidate_search": "dHash distance <= 10",
+        "geometric_inlier_ratio": 0.9873,
+        "hash_distance": 1,
+        "homography": [
+          [
+            0.9998331935794624,
+            -0.00024777625886705963,
+            -0.1246424443284068
+          ],
+          [
+            -0.0001558724243263995,
+            0.9997936307202129,
+            0.006883387147126656
+          ],
+          [
+            -2.0026278582555115e-07,
+            -3.0332151889367275e-07,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.9534,
+        "left_region": [
+          0.005,
+          0.0063,
+          0.9966,
+          0.9927
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 1165,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.9543,
+        "right_region": [
+          0.0048,
+          0.0062,
+          0.9966,
+          0.9927
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 1930 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-005",
+      "kind": "matching_content",
+      "left_id": "IMG-01",
+      "right_id": "IMG-06",
+      "support": {
+        "candidate_features": 1932,
+        "candidate_search": "dHash distance <= 10",
+        "geometric_inlier_ratio": 0.999,
+        "hash_distance": 0,
+        "homography": [
+          [
+            0.9999288871731041,
+            -2.609050059227205e-06,
+            0.016043228123324458
+          ],
+          [
+            -2.8509956503359794e-05,
+            0.9999826651927284,
+            0.01799234786344914
+          ],
+          [
+            -4.5349703229267e-08,
+            -7.87088187405855e-09,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.9596,
+        "left_region": [
+          0.005,
+          0.004,
+          0.9973,
+          0.9927
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 1930,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.9592,
+        "right_region": [
+          0.005,
+          0.004,
+          0.9974,
+          0.9927
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 56 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-008",
+      "kind": "matching_content",
+      "left_id": "IMG-02",
+      "right_id": "IMG-03",
+      "support": {
+        "candidate_features": 112,
+        "candidate_search": "Expanded region search for possible crops despite different global hashes",
+        "geometric_inlier_ratio": 0.5,
+        "hash_distance": 30,
+        "homography": [
+          [
+            1.7215868217575663,
+            0.0044404659859685345,
+            -228.27987619688332
+          ],
+          [
+            -0.021120561281294005,
+            1.7524803862138898,
+            -243.48162120457826
+          ],
+          [
+            -5.072216277978196e-05,
+            -7.314228329324648e-06,
+            0.9999999999999999
+          ]
+        ],
+        "left_coverage": 0.0347,
+        "left_region": [
+          0.2647,
+          0.257,
+          0.4585,
+          0.5509
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 56,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.0993,
+        "right_region": [
+          0.3602,
+          0.0931,
+          0.826,
+          0.4432
+        ],
+        "right_size": [
+          900,
+          1200
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 1100 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-009",
+      "kind": "matching_content",
+      "left_id": "IMG-02",
+      "right_id": "IMG-04",
+      "support": {
+        "candidate_features": 1110,
+        "candidate_search": "dHash distance <= 10",
+        "geometric_inlier_ratio": 0.991,
+        "hash_distance": 1,
+        "homography": [
+          [
+            0.9994641689570933,
+            -0.0004199070208430409,
+            0.0557355798897988
+          ],
+          [
+            -0.00018001769697321176,
+            0.9991421330747269,
+            0.25099677817907423
+          ],
+          [
+            -4.1191328501584607e-07,
+            -3.4981389196245454e-07,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.8566,
+        "left_region": [
+          0.007,
+          0.1124,
+          0.9969,
+          0.9927
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 1100,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.8569,
+        "right_region": [
+          0.0067,
+          0.1118,
+          0.9973,
+          0.9926
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 1165 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-010",
+      "kind": "matching_content",
+      "left_id": "IMG-02",
+      "right_id": "IMG-05",
+      "support": {
+        "candidate_features": 1180,
+        "candidate_search": "dHash distance <= 10",
+        "geometric_inlier_ratio": 0.9873,
+        "hash_distance": 1,
+        "homography": [
+          [
+            0.9998331935794624,
+            -0.00024777625886705963,
+            -0.1246424443284068
+          ],
+          [
+            -0.0001558724243263995,
+            0.9997936307202129,
+            0.006883387147126656
+          ],
+          [
+            -2.0026278582555115e-07,
+            -3.0332151889367275e-07,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.9534,
+        "left_region": [
+          0.005,
+          0.0063,
+          0.9966,
+          0.9927
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 1165,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.9543,
+        "right_region": [
+          0.0048,
+          0.0062,
+          0.9966,
+          0.9927
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 1930 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-011",
+      "kind": "matching_content",
+      "left_id": "IMG-02",
+      "right_id": "IMG-06",
+      "support": {
+        "candidate_features": 1932,
+        "candidate_search": "dHash distance <= 10",
+        "geometric_inlier_ratio": 0.999,
+        "hash_distance": 0,
+        "homography": [
+          [
+            0.9999288871731041,
+            -2.609050059227205e-06,
+            0.016043228123324458
+          ],
+          [
+            -2.8509956503359794e-05,
+            0.9999826651927284,
+            0.01799234786344914
+          ],
+          [
+            -4.5349703229267e-08,
+            -7.87088187405855e-09,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.9596,
+        "left_region": [
+          0.005,
+          0.004,
+          0.9973,
+          0.9927
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 1930,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.9592,
+        "right_region": [
+          0.005,
+          0.004,
+          0.9974,
+          0.9927
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 65 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-014",
+      "kind": "matching_content",
+      "left_id": "IMG-03",
+      "right_id": "IMG-04",
+      "support": {
+        "candidate_features": 99,
+        "candidate_search": "Expanded region search for possible crops despite different global hashes",
+        "geometric_inlier_ratio": 0.6566,
+        "hash_distance": 31,
+        "homography": [
+          [
+            0.5583822442220963,
+            -0.019910019162557663,
+            141.1638918242258
+          ],
+          [
+            0.006562861003179405,
+            0.5462372901250425,
+            143.0087909128475
+          ],
+          [
+            7.252897783458101e-06,
+            -1.6814486651141025e-05,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.2312,
+        "left_region": [
+          0.2585,
+          0.081,
+          0.8476,
+          0.9576
+        ],
+        "left_size": [
+          900,
+          1200
+        ],
+        "matched_features": 65,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.0804,
+        "right_region": [
+          0.2089,
+          0.2496,
+          0.4675,
+          0.9818
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 62 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-015",
+      "kind": "matching_content",
+      "left_id": "IMG-03",
+      "right_id": "IMG-05",
+      "support": {
+        "candidate_features": 91,
+        "candidate_search": "Expanded region search for possible crops despite different global hashes",
+        "geometric_inlier_ratio": 0.6813,
+        "hash_distance": 31,
+        "homography": [
+          [
+            0.5524479967878173,
+            -0.022793756750344472,
+            142.134675063777
+          ],
+          [
+            0.0057872767169570944,
+            0.5391705218132021,
+            143.4734880263293
+          ],
+          [
+            -2.530729790757329e-06,
+            -2.2609289971099503e-05,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.2821,
+        "left_region": [
+          0.1116,
+          0.081,
+          0.8235,
+          0.9576
+        ],
+        "left_size": [
+          900,
+          1200
+        ],
+        "matched_features": 62,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.0991,
+        "right_region": [
+          0.1479,
+          0.2495,
+          0.457,
+          0.9823
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 56 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-016",
+      "kind": "matching_content",
+      "left_id": "IMG-03",
+      "right_id": "IMG-06",
+      "support": {
+        "candidate_features": 92,
+        "candidate_search": "Expanded region search for possible crops despite different global hashes",
+        "geometric_inlier_ratio": 0.6087,
+        "hash_distance": 30,
+        "homography": [
+          [
+            0.6063256581995933,
+            -0.0014401658601458196,
+            126.3973252279866
+          ],
+          [
+            0.01990938893981768,
+            0.5780283745784331,
+            138.2592134387485
+          ],
+          [
+            6.413564373503389e-05,
+            3.545361456108393e-06,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.1148,
+        "left_region": [
+          0.3448,
+          0.0936,
+          0.826,
+          0.5025
+        ],
+        "left_size": [
+          900,
+          1200
+        ],
+        "matched_features": 56,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.0398,
+        "right_region": [
+          0.2566,
+          0.2577,
+          0.4581,
+          0.5987
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 1100 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-019",
+      "kind": "matching_content",
+      "left_id": "IMG-04",
+      "right_id": "IMG-05",
+      "support": {
+        "candidate_features": 1113,
+        "candidate_search": "dHash distance <= 10",
+        "geometric_inlier_ratio": 0.9883,
+        "hash_distance": 2,
+        "homography": [
+          [
+            0.9999427690053349,
+            -0.00012614427668348823,
+            0.007562366063221186
+          ],
+          [
+            -5.3991579839722845e-05,
+            1.000122357741216,
+            -0.08885498858019447
+          ],
+          [
+            -2.638980505116946e-09,
+            -2.583171223232679e-07,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.8535,
+        "left_region": [
+          0.0067,
+          0.109,
+          0.9966,
+          0.9926
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 1100,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.8536,
+        "right_region": [
+          0.0067,
+          0.1089,
+          0.9966,
+          0.9927
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 1088 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-020",
+      "kind": "matching_content",
+      "left_id": "IMG-04",
+      "right_id": "IMG-06",
+      "support": {
+        "candidate_features": 1098,
+        "candidate_search": "dHash distance <= 10",
+        "geometric_inlier_ratio": 0.9909,
+        "hash_distance": 1,
+        "homography": [
+          [
+            0.9998841200090001,
+            -0.0001513797942002155,
+            0.23112746735185527
+          ],
+          [
+            6.935737844302408e-05,
+            1.0000901931755395,
+            -0.10209838924753377
+          ],
+          [
+            1.0720947540405708e-07,
+            -4.1472045089475006e-07,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.8584,
+        "left_region": [
+          0.0097,
+          0.109,
+          0.9973,
+          0.9926
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 1088,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.8582,
+        "right_region": [
+          0.0095,
+          0.1093,
+          0.997,
+          0.9927
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "Possible relation supported by 1163 matching points. Creation order and the specific edit operation remain unverified.",
+      "id": "REL-023",
+      "kind": "matching_content",
+      "left_id": "IMG-05",
+      "right_id": "IMG-06",
+      "support": {
+        "candidate_features": 1175,
+        "candidate_search": "dHash distance <= 10",
+        "geometric_inlier_ratio": 0.9898,
+        "hash_distance": 1,
+        "homography": [
+          [
+            1.000202163070062,
+            7.837266053651547e-05,
+            0.16487533929929643
+          ],
+          [
+            0.00018694748572525475,
+            1.0003288933380945,
+            -0.06352810183712058
+          ],
+          [
+            2.42897479940859e-07,
+            1.8862484835927182e-07,
+            1.0
+          ]
+        ],
+        "left_coverage": 0.9466,
+        "left_region": [
+          0.0048,
+          0.0068,
+          0.9966,
+          0.9927
+        ],
+        "left_size": [
+          1200,
+          800
+        ],
+        "matched_features": 1163,
+        "method": "SIFT descriptors, L2 ratio test and RANSAC homography",
+        "right_coverage": 0.9467,
+        "right_region": [
+          0.005,
+          0.0068,
+          0.9966,
+          0.9927
+        ],
+        "right_size": [
+          1200,
+          800
+        ]
+      }
+    },
+    {
+      "explanation": "The embedded credential stores include matching manifest records. Review validation results for both files.",
+      "id": "C2PA-IMG-01-IMG-02",
+      "kind": "shared_credentials",
+      "left_id": "IMG-01",
+      "manifest_labels": [
+        "urn:c2pa:47f7c565-d763-4ee4-8374-15db89671cb1"
+      ],
+      "right_id": "IMG-02",
+      "support": null
+    }
+  ],
+  "report_sha256": "9087e55cabfb31dc9cbd311a186b7dba370059dd512fe8404e6e6e0d38aea7e7",
+  "schema_version": "1.0",
+  "visual_matching_available": true
+}

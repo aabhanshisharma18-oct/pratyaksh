@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pratyaksh.local/schemas/evaluation-1.0.json",
+  "title": "Pratyaksh published evaluation result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "evaluation_id", "modality", "state", "dataset", "model", "threshold", "run_date", "metrics", "coverage", "limitations", "published_by", "published_at"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "evaluation_id": {"type": "string", "minLength": 1},
+    "modality": {"enum": ["image", "audio", "video"]},
+    "state": {"enum": ["measured", "not_evaluated", "no_measurement", "threshold_selected"]},
+    "dataset": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "split", "sample_count", "class_counts"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "split": {"type": "string", "minLength": 1},
+        "sample_count": {"type": "integer", "minimum": 0},
+        "class_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}
+      }
+    },
+    "model": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {"id": {"type": "string", "minLength": 1}, "version": {"type": "string", "minLength": 1}}
+    },
+    "threshold": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "additionalProperties": false, "required": ["value", "objective", "selected_on_split"], "properties": {
+          "value": {"type": "number", "minimum": 0, "maximum": 1},
+          "objective": {"type": "string", "minLength": 1},
+          "selected_on_split": {"type": "string", "minLength": 1}
+        }}
+      ]
+    },
+    "run_date": {"type": "string", "format": "date-time"},
+    "metrics": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "additionalProperties": false, "required": ["accuracy", "precision", "recall", "f1", "confusion_matrix"], "properties": {
+          "accuracy": {"type": "number", "minimum": 0, "maximum": 1},
+          "precision": {"type": "number", "minimum": 0, "maximum": 1},
+          "recall": {"type": "number", "minimum": 0, "maximum": 1},
+          "f1": {"type": "number", "minimum": 0, "maximum": 1},
+          "confusion_matrix": {"type": "object", "additionalProperties": false, "required": ["tp", "tn", "fp", "fn"], "properties": {
+            "tp": {"type": "integer", "minimum": 0}, "tn": {"type": "integer", "minimum": 0},
+            "fp": {"type": "integer", "minimum": 0}, "fn": {"type": "integer", "minimum": 0}
+          }}
+        }}
+      ]
+    },
+    "coverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sample_count", "examined_count", "failed_count", "abstained_count"],
+      "properties": {
+        "sample_count": {"type": "integer", "minimum": 0}, "examined_count": {"type": "integer", "minimum": 0},
+        "failed_count": {"type": "integer", "minimum": 0}, "abstained_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "published_by": {"type": "string", "minLength": 1},
+    "published_at": {"type": "string", "format": "date-time"}
+  }
+}

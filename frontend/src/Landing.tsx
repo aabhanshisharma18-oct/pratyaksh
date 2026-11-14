@@ -1,3 +1,5 @@
+import {translate} from './i18n';
+import {BrandMark} from './components/BrandMark';
 import {useRef,useState} from 'react';
 import {
   ArrowRight, AudioLines, Check, ChevronRight, CircleCheck, Database,
@@ -5,12 +7,13 @@ import {
   Hash, Image as ImageIcon, Languages, Link2, LockKeyhole, Menu, Network,
   ScanSearch, ShieldCheck, Upload, Video, X
 } from 'lucide-react';
-import heroReference from './assets/forensics-hero-reference.png';
-import heroReferenceHi from './assets/forensics-hero-reference-hi.png';
-import {useI18n} from './i18n';
+import heroReference from './assets/forensics-hero-reference.webp';
+import heroReferenceHi from './assets/forensics-hero-reference-hi.webp';
+import {useI18n,type Language} from './i18n';
 import './landing.css';
 
-type LandingProps={onAnalyse:()=>void;onReport:()=>void};
+type LandingProps={onAnalyse:()=>void;onReport:()=>void;onPersonal:()=>void;onProvenance?:()=>void};
+const heroByLanguage:Partial<Record<Language,string>>={en:heroReference,hi:heroReferenceHi};
 
 const environment=[
   {
@@ -74,9 +77,8 @@ const pipeline=[
   {icon:FileCheck2,title:'Explainable report',code:'revision: 03'}
 ];
 
-function Mark(){return <span className="landing-mark" aria-hidden="true"><svg viewBox="0 0 38 38" fill="none"><path d="M19 2.5 35.5 19 19 35.5 2.5 19 19 2.5Z" stroke="currentColor" strokeWidth="1.8"/><path d="M9.5 19s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" strokeWidth="1.6"/><circle cx="19" cy="19" r="3.2" fill="currentColor"/></svg></span>}
 
-function InfrastructureIllustration(){return <svg className="infrastructure-art" viewBox="0 0 700 470" role="img" aria-label="Abstract Indian digital infrastructure with a mobile device, city skyline and data racks">
+function InfrastructureIllustration(){const{t}=useI18n();return <svg className="infrastructure-art" viewBox="0 0 700 470" role="img" aria-label={t('landing.infrastructureAlt')}>
   <g fill="none" stroke="currentColor" strokeWidth="1">
     <path d="M42 383h618M78 382V248h74v134M173 382V205h55v177M250 382V271h78v111M350 382V225h42v157M414 382V184h78v198M514 382V246h45v136M580 382V219h54v163" opacity=".34"/>
     <path d="M65 248h100m-77-35h47m51-38v30m15-30v30m211-51h82m-65-33v33m17-33v33M574 190h68" opacity=".28"/>
@@ -126,36 +128,48 @@ function DashboardPreview(){
   const time=(seconds:number)=>`00:${String(seconds).padStart(2,'0')}.000`;
   const credit=demoMedia[mode];
   return <div className="preview-shell interactive-preview" aria-label={t('Interactive Pratyaksh analysis dashboard')}>
-  <div className="preview-top"><div><span className="preview-kicker">{t('CASE')} / CYB-2026-0142</span><strong>{t('Suspected executive impersonation')}</strong></div><div className="preview-badges"><span>{t('OPEN')}</span><span>{t('REVIEW REQUIRED')}</span></div></div>
+  <div className="preview-top"><div><span className="preview-kicker">{t('CASE')} {translate("/ CYB-2026-0142")}</span><strong>{t('Suspected executive impersonation')}</strong></div><div className="preview-badges"><span>{t('OPEN')}</span><span>{t('REVIEW REQUIRED')}</span></div></div>
   <div className="preview-grid">
     <aside className="preview-tree"><p>{t('EVIDENCE')}</p>{previewEvidence.map(entry=>{const ItemIcon=entry.icon;return <button className={selectedId===entry.id?'selected':''} key={entry.id} onClick={()=>choose(entry.id)} aria-pressed={selectedId===entry.id}><span><ItemIcon size={14}/></span>{entry.id} · {t(entry.name)}</button>})}</aside>
     <section className="preview-viewer">
       <div className="preview-tabs">{(['Video','Image','Audio'] as const).map(tab=><button className={mode===tab?'active':''} onClick={()=>changeMode(tab)} aria-pressed={mode===tab} key={tab}>{t(tab)}</button>)}<small>{mode==='Image'?t('STATIC IMAGE'):`${time(elapsed)} / ${time(Math.round(activeDuration))}`}</small></div>
-      <div className={`preview-media real-media mode-${mode.toLowerCase()}`}><span className="preview-mode-label">{t(mode)} · {t('demonstration · not case evidence')}</span>{mode==='Video'&&<video key="demo-video" controls muted playsInline preload="metadata" src={demoMedia.Video.src} onLoadedMetadata={event=>syncMedia(event.currentTarget)} onTimeUpdate={event=>syncMedia(event.currentTarget)}/>} {mode==='Image'&&<img src={demoMedia.Image.src} alt="Public-domain 1839 Robert Cornelius self-portrait used as demonstration reference media"/>} {mode==='Audio'&&<div className="real-audio"><img src={demoMedia.Image.src} alt="Public-domain historical portrait accompanying the public-domain speech sample"/><audio key="demo-audio" controls preload="metadata" src={demoMedia.Audio.src} onLoadedMetadata={event=>syncMedia(event.currentTarget)} onTimeUpdate={event=>syncMedia(event.currentTarget)}/></div>}<a className="media-credit" href={credit.href} target="_blank" rel="noreferrer">{t('Source')}: {credit.label}<ExternalLink size={10}/></a></div>
-      <div className="preview-timeline" aria-label="Preview timeline">{Array.from({length:8},(_,i)=><button key={i} className={(i+1)*12.5<=progress?'marked':''} onClick={()=>seek((i+1)*12.5)} disabled={mode==='Image'} aria-label={`Seek to ${Math.round((i+1)*12.5)} percent`}/>)}</div>
-      <div className="custody"><p>{t('CHAIN OF CUSTODY')}</p><div><span><CircleCheck size={13}/>09:42 {t('Intake')}</span><i/><span><CircleCheck size={13}/>09:43 SHA-256</span><i/><span><CircleCheck size={13}/>10:21 {t('Analysis')}</span></div></div>
+      <div className={`preview-media real-media mode-${mode.toLowerCase()}`}><span className="preview-mode-label">{t(mode)} · {t('demonstration · not case evidence')}</span>{mode==='Video'&&<video key="demo-video" controls muted playsInline preload="metadata" src={demoMedia.Video.src} onLoadedMetadata={event=>syncMedia(event.currentTarget)} onTimeUpdate={event=>syncMedia(event.currentTarget)}/>} {mode==='Image'&&<img src={demoMedia.Image.src} alt={t('landing.portraitAlt')}/>} {mode==='Audio'&&<div className="real-audio"><img src={demoMedia.Image.src} alt={t('landing.audioPortraitAlt')}/><audio key="demo-audio" controls preload="metadata" src={demoMedia.Audio.src} onLoadedMetadata={event=>syncMedia(event.currentTarget)} onTimeUpdate={event=>syncMedia(event.currentTarget)}/></div>}<a className="media-credit" href={credit.href} target="_blank" rel="noreferrer">{t('Source')}: {credit.label}<ExternalLink size={10}/></a></div>
+      <div className="preview-timeline" aria-label={t('landing.previewTimeline')}>{Array.from({length:8},(_,i)=><button key={i} className={(i+1)*12.5<=progress?'marked':''} onClick={()=>seek((i+1)*12.5)} disabled={mode==='Image'} aria-label={t('landing.seekPercent',{percent:Math.round((i+1)*12.5)})}/>)}</div>
+      <div className="custody"><p>{t('CHAIN OF CUSTODY')}</p><div><span><CircleCheck size={13}/>09:42 {t('Intake')}</span><i/><span><CircleCheck size={13}/>{translate("09:43 SHA-256")}</span><i/><span><CircleCheck size={13}/>10:21 {t('Analysis')}</span></div></div>
     </section>
     <aside className="preview-findings" aria-live="polite"><p>{t('ANALYSIS SUMMARY')}</p><div className="confidence"><span>{t('MODEL SCORE')}</span><strong>{item.score}<small>%</small></strong><div><i style={{width:`${item.score}%`}}/></div><em>{t('Not calibrated as probability')}</em></div><div className="preview-finding"><span>{t(item.kind==='Audio'?'AUDIO FORENSICS':'SYNTHETIC MEDIA')}</span><strong>{t(item.finding)}</strong><p>{t(item.detail)}</p></div><div className="mini-graph"><span>REF-001</span><i/><span>{item.id}</span><small>{t(item.relation)}</small></div></aside>
   </div>
 </div>}
 
-export default function Landing({onAnalyse,onReport}:LandingProps){
+export default function Landing({onAnalyse,onReport,onPersonal}:LandingProps){
   const {language,setLanguage,t}=useI18n();
   const go=(id:string)=>document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
   return <div className="landing-page" data-language={language}>
     <main id="top">
-      <section className="reference-hero" data-language={language} aria-label="Pratyaksh multimedia forensics">
-        <img src={language==='hi'?heroReferenceHi:heroReference} alt={language==='hi'?'प्रत्यक्ष डिजिटल फोरेंसिक हिंदी हीरो बैनर':'Pratyaksh digital forensics hero banner'}/>
-        <button className="reference-hotspot home" onClick={()=>window.scrollTo({top:0,behavior:'smooth'})} aria-label="Pratyaksh home"/>
-        <button className="reference-hotspot environment nav-translate" data-hi="परिवेश" onClick={()=>go('environment')} aria-label={t('Environment')}/>
-        <button className="reference-hotspot capabilities nav-translate" data-hi="क्षमताएँ" onClick={()=>go('capabilities')} aria-label={t('Capabilities')}/>
-        <button className="reference-hotspot pipeline nav-translate" data-hi="प्रक्रिया" onClick={()=>go('workflow')} aria-label={t('Pipeline')}/>
-        <button className="reference-hotspot preview nav-translate" data-hi="पूर्वावलोकन" onClick={()=>go('preview')} aria-label={t('Preview')}/>
-        <button className="reference-hotspot compliance nav-translate" data-hi="अनुपालन" onClick={()=>go('compliance')} aria-label={t('Compliance')}/>
-        <button className="reference-hotspot language-en" onClick={()=>setLanguage('en')} aria-label="Use English" aria-pressed={language==='en'}/>
-        <button className="reference-hotspot language-hi" onClick={()=>setLanguage('hi')} aria-label="हिन्दी का उपयोग करें" aria-pressed={language==='hi'}/>
-        <button className="reference-hotspot analyse" onClick={onAnalyse} aria-label="Analyse Evidence"/>
-        <button className="reference-hotspot report" onClick={onReport} aria-label="View Sample Report"/>
+      <section className="reference-hero" data-language={language} aria-label={t('landing.heroLabel')}>
+        <img src={heroByLanguage[language]??heroReference} alt={t('landing.heroAlt')}/>
+        <button className="reference-hotspot home" onClick={()=>window.scrollTo({top:0,behavior:'smooth'})} aria-label={t('landing.home')}><BrandMark className="landing-mark"/></button>
+        <button className="reference-hotspot environment" onClick={()=>go('environment')} aria-label={t('landing.environment')}/>
+        <button className="reference-hotspot capabilities" onClick={()=>go('capabilities')} aria-label={t('landing.capabilities')}/>
+        <button className="reference-hotspot pipeline" onClick={()=>go('workflow')} aria-label={t('landing.pipeline')}/>
+        <button className="reference-hotspot preview" onClick={()=>go('preview')} aria-label={t('landing.preview')}/>
+        <button className="reference-hotspot compliance" onClick={()=>go('compliance')} aria-label={t('landing.compliance')}/>
+        <button className="reference-hotspot language-en" lang="en" aria-label={t('language.switchTo',{language:'English'})} aria-pressed={language==='en'} onClick={()=>setLanguage('en')}/>
+        <button className="reference-hotspot language-hi" lang="hi" aria-label={t('language.switchTo',{language:'हिन्दी'})} aria-pressed={language==='hi'} onClick={()=>setLanguage('hi')}/>
+        <button className="reference-hotspot analyse get-started" onClick={()=>go('get-started')}>{t('landing.getStarted')}</button>
+        <button className="reference-hotspot report" onClick={onReport} aria-label={t('landing.viewSampleReport')}/>
+      </section>
+
+      <section className="start-section" id="get-started" aria-labelledby="start-title">
+        <div className="landing-container">
+          <h2 id="start-title">{t('landing.getStarted')}</h2>
+          <div className="start-steps">
+            <article><FileSearch size={22}/><h3>{t('landing.chooseCase')}</h3><p>{t('landing.chooseCaseDescription')}</p></article>
+            <article><Upload size={22}/><h3>{t('landing.addEvidence')}</h3><p>{t('landing.addEvidenceDescription')}</p></article>
+            <article><FileCheck2 size={22}/><h3>{t('landing.reviewFindings')}</h3><p>{t('landing.reviewFindingsDescription')}</p></article>
+          </div>
+          <div className="forensic-actions"><button onClick={onPersonal}>{t('landing.checkSuspiciousFile')}<ArrowRight size={16}/></button><button onClick={onAnalyse}>{t('landing.openWorkspace')}<ArrowRight size={16}/></button></div>
+        </div>
       </section>
 
       <section className="environment-section section-band" id="environment"><div className="landing-container">
@@ -190,14 +204,14 @@ export default function Landing({onAnalyse,onReport}:LandingProps){
       <section className="compliance-section" id="compliance"><div className="landing-container compliance-grid">
         <div className="trust-copy"><span className="overline">{t('TRUST & COMPLIANCE')}</span><h2>{t('Designed for a reviewable electronic record.')}</h2><p>{t('The prototype supports the information an investigator may need when preparing electronic evidence under Section 63 of the Bharatiya Sakshya Adhiniyam, 2023. It does not itself issue legal certification.')}</p>
           <ol><li><span>01</span><div><h3>{t('Hash every preserved item')}</h3><p>{t('Record SHA-256, receipt context and derivative relationships.')}</p></div></li><li><span>02</span><div><h3>{t('Retain an audit trail')}</h3><p>{t('Keep actor, action, target, timestamp and outcome visible.')}</p></div></li><li><span>03</span><div><h3>{t('Export reproducible records')}</h3><p>{t('Produce deterministic JSON, printable report and package manifest.')}</p></div></li></ol>
-          <p className="context-note">Contextual references to I4C, CERT-In and state cyber cells indicate the operating environment only; no endorsement or affiliation is claimed.</p>
+          <p className="context-note">{translate("Contextual references to I4C, CERT-In and state cyber cells indicate the operating environment only; no endorsement or affiliation is claimed.")}</p>
         </div>
-        <aside className="readiness-card"><div><ShieldCheck size={23}/><span>SECTION 63</span><small>{t('READINESS CHECKLIST')}</small></div>{['Electronic record identified','Device or source particulars recorded','SHA-256 value included','Method and version disclosed','Examined scope stated','Limitations and failures retained','Producing authority review reserved'].map(x=><p key={x}><Check size={15}/>{t(x)}</p>)}<footer>{t('Final certification and admissibility assessment remain with the producing authority and the competent court.')}</footer></aside>
+        <aside className="readiness-card"><div><ShieldCheck size={23}/><span>{translate("SECTION 63")}</span><small>{t('READINESS CHECKLIST')}</small></div>{['Electronic record identified','Device or source particulars recorded','SHA-256 value included','Method and version disclosed','Examined scope stated','Limitations and failures retained','Producing authority review reserved'].map(x=><p key={x}><Check size={15}/>{t(x)}</p>)}<footer>{t('Final certification and admissibility assessment remain with the producing authority and the competent court.')}</footer></aside>
       </div></section>
 
-      <section className="cyber-strip" aria-label="National cybercrime reporting information"><div className="landing-container"><div><span>{t('REPORT FINANCIAL CYBER FRAUD')}</span><strong>{t('National helpline')} <b>1930</b></strong></div><a href="https://cybercrime.gov.in/" target="_blank" rel="noreferrer">cybercrime.gov.in <ExternalLink size={15}/></a></div></section>
+      <section className="cyber-strip" aria-label={t('landing.nationalCybercrimeInfo')}><div className="landing-container"><div><span>{t('REPORT FINANCIAL CYBER FRAUD')}</span><strong>{t('National helpline')} <b>1930</b></strong></div><a href="https://cybercrime.gov.in/" target="_blank" rel="noreferrer">{translate("cybercrime.gov.in")} <ExternalLink size={15}/></a></div></section>
     </main>
 
-    <footer className="landing-footer"><div className="landing-container footer-grid"><div><a href="#top" className="landing-brand"><Mark/><span>Pratyaksh <b>|</b> <span lang="hi">प्रत्यक्ष</span></span></a><p>{t('Multimedia forensics for careful, traceable investigation.')}</p></div><div><span>{t('EXPLORE')}</span><button onClick={()=>go('capabilities')}>{t('Capabilities')}</button><button onClick={()=>go('workflow')}>{t('Workflow')}</button><button onClick={()=>go('compliance')}>{t('Trust & compliance')}</button></div><div><span>{t('WORKSPACE')}</span><button onClick={onAnalyse}>{t('Analyse evidence')}</button><button onClick={onReport}>{t('Sample report')}</button></div><div><span>{t('PROJECT STATUS')}</span><p>{t('Independent academic prototype. Not a Government of India product, not affiliated with any public authority, and not a substitute for qualified forensic or legal review.')}</p></div></div><div className="landing-container footer-bottom"><span>© 2026 Pratyaksh prototype</span><span>{t('No government emblems or official marks used.')}</span></div></footer>
+    <footer className="landing-footer"><div className="landing-container footer-grid"><div><a href="#top" className="landing-brand"><BrandMark className="landing-mark"/><span>{translate("Pratyaksh")} <b>|</b> <span lang="hi">{translate("प्रत्यक्ष")}</span></span></a><p>{t('Multimedia forensics for careful, traceable investigation.')}</p></div><div><span>{t('EXPLORE')}</span><button onClick={()=>go('capabilities')}>{t('Capabilities')}</button><button onClick={()=>go('workflow')}>{t('Workflow')}</button><button onClick={()=>go('compliance')}>{t('Trust & compliance')}</button></div><div><span>{t('WORKSPACE')}</span><button onClick={onAnalyse}>{t('Analyse evidence')}</button><button onClick={onReport}>{t('Sample report')}</button></div><div><span>{t('PROJECT STATUS')}</span><p>{t('Independent academic prototype. Not a Government of India product, not affiliated with any public authority, and not a substitute for qualified forensic or legal review.')}</p></div></div><div className="landing-container footer-bottom"><span>{t('landing.copyright')}</span><span>{t('No government emblems or official marks used.')}</span></div></footer>
   </div>
 }

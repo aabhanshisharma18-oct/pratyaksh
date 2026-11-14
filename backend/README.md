@@ -15,6 +15,7 @@ python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 Open `http://127.0.0.1:8000/docs` to test the APIs:
 
 - `POST /api/d1/analyze-image` — UniversalFakeDetect image candidate.
+- `POST /api/d1/analyze-video` — bounded timestamp sampling with per-frame UniversalFakeDetect signals.
 - `POST /api/d1/analyze-face-forgery` — optional SBI face-forgery research candidate.
 - `POST /api/d1/probe-audio` — AASIST audio execution probe.
 - `GET /api/capabilities` — implemented, loaded and evaluated state.
@@ -73,11 +74,26 @@ Restart the API and use `POST /api/d1/analyze-face-forgery`. Its output is a raw
 uncalibrated research signal, not a real/fake verdict. Accuracy must be measured
 on labelled development and held-out test data before selecting a threshold.
 
+## Video baseline
+
+`POST /api/d1/analyze-video` accepts an FFmpeg-decodable video up to 50 MiB and
+120 seconds. FFprobe supplies the first video stream's presentation timestamps.
+The service selects at most 12 timestamps near the centres of two-second sampling
+bins, decodes those frames, and applies the same whole-image candidate used by the
+image endpoint. The response retains each examined timestamp, rejected samples,
+coverage, and separate arithmetic-mean and maximum raw frame signals.
+
+This is not a temporal, motion-consistency, face-swap, lip-sync or audio-visual
+detector. The summaries have no validated video threshold and every successful
+video result remains `inconclusive`. Video-specific held-out evaluation is still
+required before enabling any decision label.
+
 ## Current boundary
 
-- Implemented: bounded whole-image analysis, optional bounded face-forgery
-  research analysis, and bounded audio execution probe.
-- Not implemented: video, calibrated thresholds, D2 evidence intake, main D4
+- Implemented: bounded whole-image analysis, bounded timestamp-sampled video
+  analysis, optional bounded face-forgery research analysis, and bounded audio
+  execution probe.
+- Not implemented: video-specific calibrated aggregation, calibrated thresholds, D2 evidence intake, main D4
   dashboard integration, model training or a final authenticity verdict.
 - Next evaluation work: permitted labelled controls, group-separated splits,
   threshold selection on development data and held-out error measurement.
@@ -89,3 +105,27 @@ basis for every ground-truth label. The evaluator reports false-negative and
 false-positive rates, ranking metrics, and manipulation-specific performance.
 Threshold selection is restricted to the development split. See
 `evaluation/README.md`; never commit restricted evaluation media.
+
+## Combined image and audio scan
+
+`POST /api/d1/scan` accepts multipart fields `file`, `evidence_id`, and
+`media_type` (`image` or `audio`). Image scans run UniversalFakeDetect, the optional
+SBI face-forgery candidate, and file inspection. Audio scans run AASIST and file
+inspection. The response contains a shared run ID, input SHA-256, individual findings,
+and an overall review state. The summary is inconclusive when at least one check
+completed, and unavailable otherwise. The model score and file properties have
+different meanings and remain separate until a fusion rule has been validated.
+
+Successful SBI checks also return `face_analysis`, containing the decoded image
+dimensions, per-face crop boxes in pixel coordinates, and raw face-forgery scores.
+A completed search with no detected faces returns `execution_status: no_face` in
+`face_analysis` and no score. Missing SBI files produce an unavailable finding
+while the other checks continue. The Image workspace shows selectable face scores
+and crop boxes. Checkpoint files remain local under the research licence.
+
+For the local workbench, start this backend on port 8000 and use
+`VITE_D1_API_BASE_URL=http://127.0.0.1:8000 npm run dev -- --port 5173`.
+Add a supported image or audio file, open it in the workbench, and choose
+**Request analysis**. Use browser intake for audio. The workspace keeps the
+latest result per evidence item for the current session. Saving a report revision
+captures its findings.

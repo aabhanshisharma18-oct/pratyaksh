@@ -1,0 +1,16 @@
+.inspection-panel { padding: 16px; min-width: 0; }
+.inspection-panel p { margin: 8px 0; color: var(--muted); font-size: 12px; }
+.inspection-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin: 12px 0; }
+.inspection-controls label { display: grid; gap: 4px; font-size: 12px; }
+.inspection-controls select { padding: 5px; color: var(--text); background: var(--panel); border: 1px solid var(--border); }
+.inspection-panel canvas, .inspection-video video { width: 100%; max-height: 440px; object-fit: contain; background: #17273b; }
+.inspection-video button { margin-top: 6px; }
+.inspection-plot { padding: 12px 0; }
+.inspection-bars { display: flex; height: 85px; gap: 1px; border-bottom: 1px solid var(--border); }
+.inspection-bars > div { flex: 1; display: flex; align-items: end; }
+.inspection-bars i { flex: 1; }
+.inspection-axis { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
+.inspection-comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.inspection-comparison figure { margin: 0; border: 1px solid var(--border); overflow: hidden; }
+.inspection-comparison figcaption { padding: 8px; overflow-wrap: anywhere; }
+.inspection-comparison img { width: 100%; display: block; }

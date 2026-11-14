@@ -1,0 +1,2 @@
+import {useI18n} from '../../i18n';
+export function StatusPills({execution,result}:{execution:{label:string;tone:string};result:{label:string;tone:string}}){const{t}=useI18n();return <div className="finding-status-row"><span className={`finding-pill ${execution.tone}`}><b>{t('Execution:')}</b> {t(execution.label)}</span><span className={`finding-pill ${result.tone}`}><b>{t('Result:')}</b> {t(result.label)}</span></div>}

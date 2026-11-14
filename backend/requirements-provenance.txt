@@ -1,0 +1,6 @@
+-r requirements-evidence.txt
+opencv-python-headless>=4.10,<5
+reportlab>=4,<5
+c2pa-python>=0.38,<0.39
+pillow-heif>=1,<2
+ortools>=9.14,<10

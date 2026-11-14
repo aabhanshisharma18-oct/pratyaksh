@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.1",
+  "name": "Replace with the approved D1 video evaluation collection",
+  "created_at": "2026-11-11T00:00:00Z",
+  "samples": [
+    {
+      "sample_id": "VID-DEV-REAL-001",
+      "path": "media/replace-with-approved-development-genuine.mp4",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "label": "genuine",
+      "split": "development",
+      "group_id": "SOURCE-DEV-001",
+      "media_type": "video",
+      "manipulation_type": "none",
+      "ground_truth": {
+        "basis": "Original camera video supplied by its creator",
+        "reference": "Replace with consent or dataset record identifier"
+      },
+      "source": "Document creator or dataset and collection procedure",
+      "terms": "Document consent, licence and redistribution status",
+      "transformation": "none"
+    },
+    {
+      "sample_id": "VID-DEV-FAKE-001",
+      "path": "media/replace-with-approved-development-manipulated.mp4",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "label": "synthetic",
+      "split": "development",
+      "group_id": "SOURCE-DEV-002",
+      "media_type": "video",
+      "manipulation_type": "face_swap",
+      "ground_truth": {
+        "basis": "Manipulation documented by the dataset or its creator",
+        "reference": "Replace with manipulation record identifier"
+      },
+      "source": "Document generator, method, version or dataset record",
+      "terms": "Document licence and redistribution status",
+      "transformation": "none"
+    },
+    {
+      "sample_id": "VID-TEST-REAL-001",
+      "path": "media/replace-with-approved-held-out-genuine.mp4",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "label": "genuine",
+      "split": "test",
+      "group_id": "SOURCE-TEST-001",
+      "media_type": "video",
+      "manipulation_type": "none",
+      "ground_truth": {
+        "basis": "Held-out original video with documented origin",
+        "reference": "Replace with consent or dataset record identifier"
+      },
+      "source": "Document creator or dataset and collection procedure",
+      "terms": "Document consent, licence and redistribution status",
+      "transformation": "none"
+    },
+    {
+      "sample_id": "VID-TEST-FAKE-001",
+      "path": "media/replace-with-approved-held-out-manipulated.mp4",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "label": "synthetic",
+      "split": "test",
+      "group_id": "SOURCE-TEST-002",
+      "media_type": "video",
+      "manipulation_type": "face_swap",
+      "ground_truth": {
+        "basis": "Held-out manipulation documented by the dataset or its creator",
+        "reference": "Replace with manipulation record identifier"
+      },
+      "source": "Document generator, method, version or dataset record",
+      "terms": "Document licence and redistribution status",
+      "transformation": "none"
+    }
+  ]
+}

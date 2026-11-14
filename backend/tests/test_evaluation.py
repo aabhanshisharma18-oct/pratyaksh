@@ -15,6 +15,8 @@ from evaluation.evaluate_predictions import (
     validate_manifest,
 )
 from evaluation.prepare_asvspoof2019_la import build_manifest as build_audio_manifest
+from evaluation.prepare_deepfaketimit_video import manifest_item as video_manifest_item
+from evaluation.reaggregate_video_predictions import reaggregate
 from evaluation.run_asvspoof2019_la_archive import (
     load_journal,
     make_sample as make_archive_sample,
@@ -23,6 +25,7 @@ from evaluation.run_asvspoof2019_la_archive import (
 )
 from evaluation.run_audio_manifest import run_samples as run_audio_samples
 from evaluation.run_image_manifest import run_samples
+from evaluation.run_video_manifest import run_samples as run_video_samples
 
 
 def sample(sample_id, label, split, group_id):
@@ -43,6 +46,47 @@ def sample(sample_id, label, split, group_id):
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_video_predictions_are_reaggregated_without_rerunning_inference(self):
+        records = [
+            {
+                "sample_id": "video-a",
+                "execution_status": "completed",
+                "aggregation": "mean",
+                "deepfake_score": 0.4,
+                "mean_frame_score": 0.4,
+                "maximum_frame_score": 0.9,
+                "frame_predictions": [
+                    {"timestamp_ms": 100, "deepfake_score": 0.1},
+                    {"timestamp_ms": 900, "deepfake_score": 0.9},
+                ],
+            },
+            {"sample_id": "video-failed", "execution_status": "failed"},
+        ]
+        maximum = reaggregate(records, "maximum")
+        self.assertEqual(maximum[0]["aggregation"], "maximum")
+        self.assertEqual(maximum[0]["deepfake_score"], 0.9)
+        self.assertEqual(maximum[0]["frame_predictions"], records[0]["frame_predictions"])
+        self.assertNotIn("deepfake_score", maximum[1])
+        self.assertEqual(records[0]["aggregation"], "mean")
+
+    def test_deepfaketimit_video_item_records_normalization_and_group(self):
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "clip.mp4"
+            path.write_bytes(b"normalized-video")
+            item = video_manifest_item(
+                sample_id="DFTV-DEVELOPMENT-FAKE-A-SA1",
+                path=path,
+                label="synthetic",
+                split="development",
+                pair_id="PAIR-F-01",
+                subject="subject-a",
+            )
+        self.assertEqual(item["media_type"], "video")
+        self.assertEqual(item["group_id"], "PAIR-F-01")
+        self.assertEqual(item["manipulation_type"], "face_swap")
+        self.assertIn("H.264", item["transformation"])
+        self.assertEqual(len(item["sha256"]), 64)
+
     def test_asvspoof_pilot_sampling_is_balanced_and_reproducible(self):
         rows = [
             {
@@ -243,6 +287,99 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(records[0]["execution_status"], "failed")
         self.assertIn("no face was detected", records[0]["error"])
 
+    def test_video_manifest_runner_records_frames_coverage_and_aggregation(self):
+        class Sampler:
+            def sample(self, raw, filename):
+                self.raw = raw
+                self.filename = filename
+                return {
+                    "metadata": {"duration_ms": 5000, "width": 640, "height": 360},
+                    "requested_count": 3,
+                    "frames": [
+                        {"timestamp_ms": 800, "image": Image.new("RGB", (64, 48))},
+                        {"timestamp_ms": 2500, "image": Image.new("RGB", (64, 48))},
+                    ],
+                    "rejected": [
+                        {"timestamp_ms": 4200, "reason": "frame_decode_failed"}
+                    ],
+                }
+
+        class Detector:
+            def __init__(self):
+                self.scores = iter((0.2, 0.8))
+
+            def predict(self, image):
+                return {"deepfake_score": next(self.scores)}
+
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "sample.mp4"
+            path.write_bytes(b"unit-test-video")
+            item = sample("video", "synthetic", "development", "source-video")
+            item.update(
+                {
+                    "path": path.name,
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                    "media_type": "video",
+                    "manipulation_type": "face_swap",
+                }
+            )
+            sampler = Sampler()
+            records = run_video_samples(
+                [item], Path(folder), "development", sampler, Detector(), "mean"
+            )
+
+        record = records[0]
+        self.assertEqual(record["execution_status"], "completed")
+        self.assertAlmostEqual(record["deepfake_score"], 0.5)
+        self.assertAlmostEqual(record["maximum_frame_score"], 0.8)
+        self.assertEqual(record["examined_samples"], 2)
+        self.assertEqual(record["requested_samples"], 3)
+        self.assertEqual(len(record["rejected_samples"]), 1)
+        self.assertEqual(
+            [frame["timestamp_ms"] for frame in record["frame_predictions"]],
+            [800, 2500],
+        )
+        self.assertEqual(sampler.raw, b"unit-test-video")
+
+    def test_video_manifest_runner_can_freeze_maximum_aggregation(self):
+        class Sampler:
+            def sample(self, raw, filename):
+                return {
+                    "metadata": {"duration_ms": 1000},
+                    "requested_count": 2,
+                    "frames": [
+                        {"timestamp_ms": 250, "image": Image.new("RGB", (64, 64))},
+                        {"timestamp_ms": 750, "image": Image.new("RGB", (64, 64))},
+                    ],
+                    "rejected": [],
+                }
+
+        class Detector:
+            def __init__(self):
+                self.values = iter((0.1, 0.9))
+
+            def predict(self, image):
+                return {"deepfake_score": next(self.values)}
+
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "sample.mp4"
+            path.write_bytes(b"video")
+            item = sample("maximum", "synthetic", "development", "source-max")
+            item.update(
+                {
+                    "path": path.name,
+                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                    "media_type": "video",
+                    "manipulation_type": "face_swap",
+                }
+            )
+            record = run_video_samples(
+                [item], Path(folder), "development", Sampler(), Detector(), "maximum"
+            )[0]
+
+        self.assertAlmostEqual(record["deepfake_score"], 0.9)
+        self.assertEqual(record["aggregation"], "maximum")
+
     def test_metrics_and_unavailable_are_reported_separately(self):
         samples = [
             sample("a", "synthetic", "test", "g-a"),
@@ -309,6 +446,15 @@ class EvaluationTests(unittest.TestCase):
             {"schema_version": "1.1", "samples": [item]}
         )
         self.assertEqual(validated[0]["media_type"], "audio")
+
+    def test_v11_manifest_accepts_documented_video(self):
+        item = sample("video", "synthetic", "development", "source-video")
+        item["media_type"] = "video"
+        item["path"] = "video.mp4"
+        validated = validate_manifest(
+            {"schema_version": "1.1", "samples": [item]}
+        )
+        self.assertEqual(validated[0]["media_type"], "video")
 
     def test_threshold_is_selected_from_development_predictions(self):
         samples = [

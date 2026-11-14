@@ -1,0 +1,50 @@
+{
+  "seed": 20261112,
+  "image": {
+    "statuses": {
+      "format_support": "Supported",
+      "decoding": "Succeeded",
+      "analysis": "Completed"
+    },
+    "evaluation": {
+      "iou": 1.0,
+      "pixel_agreement": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "tp": 2048,
+      "fp": 0,
+      "fn": 0,
+      "tn": 14336
+    },
+    "limitations": [
+      "Copy-move localization result \u2013 possible duplicated regions. Repeated natural textures can produce false matches. This is not a universal authenticity verdict.",
+      "The method detects exact repeated blocks and may miss resized, rotated, recompressed, or heavily edited copies."
+    ]
+  },
+  "video": {
+    "statuses": {
+      "format_support": "Supported",
+      "decoding": "Succeeded",
+      "analysis": "Completed"
+    },
+    "evaluation": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "true_positive_pairs": 1,
+      "false_positive_pairs": 0,
+      "missed_pairs": 0
+    },
+    "limitations": [
+      "Frame continuity observation only. Static scenes or certain encoding behaviors can also produce identical frames. This is not comprehensive tampering authentication.",
+      "Sampling is bounded and can miss events between sampled frames."
+    ]
+  },
+  "controls": [
+    "control-unedited.png",
+    "repeating-texture-false-alarm.png",
+    "corrupt.png",
+    "unsupported.txt"
+  ]
+}

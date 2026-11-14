@@ -1,0 +1,59 @@
+{
+  "purpose": "Prepared synthetic workflow test. Labels do not specify expected model scores.",
+  "files": [
+    {
+      "filename": "01-reference-synthetic.png",
+      "description": "AI-generated reference scene",
+      "sha256": "d893ae11b5978fd0110906f8fef8f386acc540bde78b334661dd4b69f238c2b4",
+      "bytes": 2447694
+    },
+    {
+      "filename": "02-exact-copy.png",
+      "description": "Exact byte copy of the reference",
+      "sha256": "d893ae11b5978fd0110906f8fef8f386acc540bde78b334661dd4b69f238c2b4",
+      "bytes": 2447694
+    },
+    {
+      "filename": "03-generative-reframing.png",
+      "description": "Generative reframing, not a pixel-exact crop",
+      "sha256": "2bd43f4a41261f2cf0349d22b4bf2fe75334c33a2b307b67f5059ffa1efa29d3",
+      "bytes": 2222433
+    },
+    {
+      "filename": "04-added-text-generative-edit.png",
+      "description": "Generative edit with a text banner",
+      "sha256": "07072addeeef933fe66e59e7f69a473ffd8b7f3b511f0e13d28e5f16d0930852",
+      "bytes": 2131437
+    },
+    {
+      "filename": "05-resaved-reference.jpg",
+      "description": "JPEG re-save of the reference",
+      "sha256": "5d540a1569372a8fb58b73f244ee4d0c5ceb5b4a23b04f3a9e8810187a00a7ba",
+      "bytes": 145958
+    },
+    {
+      "filename": "06-independent-synthetic-scene.png",
+      "description": "Independent generated scene",
+      "sha256": "ea95cbc339eaed4d4510bf2996244663bb5d23493a4e68d8ecce37dba7ae9dcd",
+      "bytes": 2463360
+    },
+    {
+      "filename": "07-copy-move-test.png",
+      "description": "Synthetic exact-patch copy-move fixture",
+      "sha256": "43732a16a9f5d411d59da7e9aed6e9667149abe4d0af4094dc3a45d839c33020",
+      "bytes": 141786
+    },
+    {
+      "filename": "08-synthetic-voice.wav",
+      "description": "Generated speech",
+      "sha256": "c78fab73764743cb7b15a5289ad9c9426ccdf12280fd1e0767ddec6fdfd22984",
+      "bytes": 281382
+    },
+    {
+      "filename": "09-motion-control.mp4",
+      "description": "Generated motion/playback fixture with no faces",
+      "sha256": "15ebcaafd2504d3a73eab542e26318315cbdb8889f08c91c824e7ad800888a66",
+      "bytes": 41347
+    }
+  ]
+}

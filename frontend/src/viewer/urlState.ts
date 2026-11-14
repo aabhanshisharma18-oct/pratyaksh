@@ -1,0 +1,5 @@
+import type {ViewerSelection} from './selection';
+import {parseTimeMs} from './timeFormat';
+export type ViewerUrlState={positionMs?:number;startMs?:number;endMs?:number};
+export function parseViewerUrlState(value:string|URLSearchParams):ViewerUrlState{const params=typeof value==='string'?new URLSearchParams(value.replace(/^\?/,'')):value;const read=(key:string)=>{const raw=params.get(key);if(raw==null)return undefined;const parsed=parseTimeMs(raw);return parsed==null?undefined:parsed};const positionMs=read('t'),startMs=read('start'),endMs=read('end');return{...(positionMs!=null?{positionMs}:{}),...(startMs!=null&&endMs!=null&&endMs>startMs?{startMs,endMs}: {})}}
+export function serializeViewerUrlState(state:Pick<ViewerSelection,'positionMs'|'interval'>):string{const params=new URLSearchParams();if(state.positionMs>0)params.set('t',(state.positionMs/1000).toFixed(3));if(state.interval){params.set('start',(state.interval.startMs/1000).toFixed(3));params.set('end',(state.interval.endMs/1000).toFixed(3))}return params.toString()}

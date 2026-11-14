@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class ContractTests(unittest.TestCase):
     def test_contract_files_are_valid_json(self):
-        for name in ("d1-finding.schema.json", "d1-run.schema.json"):
+        for name in ("d1-finding.schema.json", "d1-run.schema.json", "finding-note.schema.json", "evaluation-1.0.schema.json"):
             with self.subTest(name=name):
                 document = json.loads((ROOT / "contracts" / name).read_text())
                 self.assertEqual(document["$schema"], "https://json-schema.org/draft/2020-12/schema")

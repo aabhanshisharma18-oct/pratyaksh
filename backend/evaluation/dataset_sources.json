@@ -1,0 +1,271 @@
+{
+  "reviewed_at": "2026-11-14",
+  "discovery_source": "https://github.com/Daisy-Zhang/Awesome-Deepfakes-Detection",
+  "note": "This is a catalogue, not a claim that these datasets were downloaded, licensed, trained on, or independently verified. Repeated image/video entries are consolidated. Dataset content is not covered by the catalogue repository licence.",
+  "datasets": [
+    {
+      "id": "uadfv",
+      "name": "UADFV",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "head-pose-era face forgeries",
+      "source_url": "https://arxiv.org/abs/1811.00656",
+      "access_status": "Locate current author-hosted download; access not verified",
+      "proposed_role": "external_test",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "ebv",
+      "name": "Eye Blinking Video (EBV)",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "early blinking-focused examples",
+      "source_url": "https://www.cs.albany.edu/~lsw/downloads.html",
+      "access_status": "Listed download returned 404 during review",
+      "proposed_role": "historical_test",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "deepfaketimit",
+      "name": "DeepfakeTIMIT",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "older face swaps",
+      "source_url": "https://conradsanderson.id.au/vidtimit/",
+      "access_status": "Archive already local; genuine source and fake archive are separate",
+      "proposed_role": "historical_test",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "dffd",
+      "name": "DFFD",
+      "modalities": [
+        "image",
+        "video"
+      ],
+      "purpose": "multiple facial manipulation types",
+      "source_url": "https://cvlab.cse.msu.edu/project-ffd.html",
+      "access_status": "Author site timed out during review; verify access and terms",
+      "proposed_role": "training_candidate",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "dfd",
+      "name": "Google/Jigsaw DeepFakeDetection",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "actor-based face manipulations",
+      "source_url": "https://github.com/ondyari/FaceForensics",
+      "access_status": "Hosted through FaceForensics; request access",
+      "proposed_role": "training_candidate",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "celebdf-v1",
+      "name": "Celeb-DF v1",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "earlier Celeb-DF release",
+      "source_url": "https://github.com/yuezunli/celeb-deepfakeforensics",
+      "access_status": "Overlap with v2 must be checked; do not count as independent data",
+      "proposed_role": "overlap_review",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "celebdf-v2",
+      "name": "Celeb-DF v2",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "face swaps",
+      "source_url": "https://github.com/yuezunli/celeb-deepfakeforensics",
+      "access_status": "Previously used locally; full extracted location not found in Desktop top-level scan",
+      "proposed_role": "existing_or_relocate",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "dfdc",
+      "name": "DFDC",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "diverse actors and face swaps",
+      "source_url": "https://www.kaggle.com/c/deepfake-detection-challenge/data",
+      "access_status": "Requires Kaggle credentials/accepted data access, or Meta AWS registration; neither is configured locally",
+      "proposed_role": "training_candidate",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "faceforensics",
+      "name": "FaceForensics++",
+      "modalities": [
+        "video",
+        "image"
+      ],
+      "purpose": "Deepfakes, Face2Face, FaceSwap, NeuralTextures",
+      "source_url": "https://github.com/ondyari/FaceForensics",
+      "access_status": "Author request form required; c23 subset first after approval",
+      "proposed_role": "training_candidate",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "ffiw",
+      "name": "FFIW-10K",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "multiple faces in natural scenes",
+      "source_url": "https://github.com/tfzhou/FFIW",
+      "access_status": "Review author download instructions and permissions",
+      "proposed_role": "multi_face_test",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "deeperforensics",
+      "name": "DeeperForensics-1.0",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "face swaps and real-world perturbations",
+      "source_url": "https://github.com/EndlessSora/DeeperForensics-1.0",
+      "access_status": "Review access process; use a bounded subset after approval",
+      "proposed_role": "robustness_test",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "wilddeepfake",
+      "name": "WildDeepfake",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "internet-collected face sequences",
+      "source_url": "https://github.com/xingjunm/wild-deepfake",
+      "access_status": "Author requires an agreement; official Hugging Face mirror exists, but mirror availability does not remove author access conditions",
+      "proposed_role": "external_test",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "forgerynet",
+      "name": "ForgeryNet",
+      "modalities": [
+        "image",
+        "video"
+      ],
+      "purpose": "multiple editing and forgery methods",
+      "source_url": "https://github.com/yinanhe/forgerynet",
+      "access_status": "Large collection; select relevant tasks and review official terms",
+      "proposed_role": "later_expansion",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "wldr",
+      "name": "World Leaders dataset (WLDR)",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "person-of-interest research",
+      "source_url": "https://openaccess.thecvf.com/content_CVPR_2019/html/Agarwal_Protecting_World_Leaders_Against_Deep_Fakes_CVPR_2019_paper.html",
+      "access_status": "Paper reference; no current general-purpose download verified",
+      "proposed_role": "research_reference",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "fakeavceleb",
+      "name": "FakeAVCeleb",
+      "modalities": [
+        "video",
+        "audio"
+      ],
+      "purpose": "real/fake audio and real/fake video combinations",
+      "source_url": "https://github.com/DASH-Lab/FakeAVCeleb",
+      "access_status": "Author request form required; keep audio and visual labels separate",
+      "proposed_role": "multimodal_test",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "deepspeak",
+      "name": "DeepSpeak",
+      "modalities": [
+        "video",
+        "audio"
+      ],
+      "purpose": "webcam face swaps and lip-sync",
+      "source_url": "https://huggingface.co/datasets/faridlab/deepspeak_v1",
+      "access_status": "Gated request and institutional licence; author recommends corrected v1.1 over v1.0",
+      "proposed_role": "external_test",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "idforge",
+      "name": "IDForge",
+      "modalities": [
+        "video",
+        "audio"
+      ],
+      "purpose": "identity-driven multimodal forgeries",
+      "source_url": "https://github.com/xyyandxyy/IDForge",
+      "access_status": "Review author access process and modality-specific labels",
+      "proposed_role": "later_expansion",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "celebdfpp",
+      "name": "Celeb-DF++",
+      "modalities": [
+        "video"
+      ],
+      "purpose": "face swaps, reenactment and talking faces",
+      "source_url": "https://github.com/OUC-VAS/Celeb-DF-PP",
+      "access_status": "Author approval required; overlaps original Celeb-DF sources",
+      "proposed_role": "external_test_after_overlap_audit",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "ifakefacedb",
+      "name": "iFakeFaceDB",
+      "modalities": [
+        "image"
+      ],
+      "purpose": "synthetic faces with fingerprint modification",
+      "source_url": "https://github.com/socialabubi/iFakeFaceDB",
+      "access_status": "Official download server failed to connect on 2026-11-14; research-only use stated by author",
+      "proposed_role": "image_robustness_test",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "generatedphotos",
+      "name": "100k Faces / Generated Photos",
+      "modalities": [
+        "image"
+      ],
+      "purpose": "synthetic faces",
+      "source_url": "https://generated.photos/",
+      "access_status": "Do not scrape; confirm current dataset availability and licensing",
+      "proposed_role": "optional_licence_review",
+      "downloaded_by_this_expansion": false
+    },
+    {
+      "id": "dfgc",
+      "name": "DFGC 2021",
+      "modalities": [
+        "image",
+        "video"
+      ],
+      "purpose": "challenge-generated facial forgeries",
+      "source_url": "https://github.com/bomb2peng/DFGC_starterkit",
+      "access_status": "Request form required; author recommends held-out testing only; derived from Celeb-DF v2 test sources",
+      "proposed_role": "external_test_only",
+      "downloaded_by_this_expansion": false
+    }
+  ],
+  "budget": {
+    "maximum_new_dataset_bytes": 20000000000,
+    "includes": "archives, extracted media and persistent download caches combined",
+    "status": "authorised by user; no new dataset downloaded yet"
+  }
+}

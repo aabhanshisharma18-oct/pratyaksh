@@ -1,0 +1,27 @@
+PRATYAKSH PROVENANCE TEST SET
+
+Upload the five PNG files when the provenance workflow is implemented.
+
+A is the AI-generated reference photo with two fictional people.
+B is an exact file copy of A. An exact-duplicate check should connect A and B.
+C is an AI-generated cropped-view derivative focusing on the woman.
+D is an AI-edited derivative with the text CAFE MEETUP — SATURDAY.
+E is an AI-edited derivative changing the man's face on the right.
+
+A is a reference asset, not a genuine camera photograph.
+C, D and E were made using generative editing. They can contain incidental
+changes beyond the intended crop, text or face edit. C is not a pixel-exact crop.
+Only B has a guaranteed exact-byte relationship to A.
+
+ground-truth.json records filenames, known generation parents and SHA-256 hashes.
+The generation relationships are test labels supplied by us. They are not
+relationships independently established by the Pratyaksh application.
+
+No detector scores or provenance-system results are claimed for this set.
+
+Additional fixtures
+F is a JPEG re-save of synthetic A, with embedded credentials omitted.
+G is a self-captured screenshot of the Pratyaksh landing page. It is a different scene from A.
+A phone-original photo is still required for the real-photo judge walkthrough.
+
+H is an independently AI-generated lake scene. It has no intended shared image content with the cafe family.

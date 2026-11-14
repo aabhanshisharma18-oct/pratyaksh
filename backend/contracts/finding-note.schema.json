@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pratyaksh.local/schemas/finding-note-1.0.json",
+  "title": "Pratyaksh finding reviewer note",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["note_id", "finding_id", "finding_sha256", "status", "text", "author", "author_verified", "created_at"],
+  "properties": {
+    "note_id": {"type": "string", "pattern": "^NOTE-[0-9a-f]+$"},
+    "finding_id": {"type": "string", "minLength": 1},
+    "finding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["reviewed", "questioned"]},
+    "text": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "author": {"type": "string", "minLength": 1},
+    "author_verified": {"const": false},
+    "created_at": {"type": "string", "format": "date-time"}
+  }
+}

@@ -1,0 +1,5 @@
+.timeline-marker.active{outline:2px solid #fff;outline-offset:2px}
+.sample-marker{position:absolute;bottom:1px;width:10px;height:10px;transform:translateX(-5px);border:2px solid #10202b;border-radius:50%;z-index:2}
+.sample-marker.examined{background:#70b3a8}
+.sample-marker.rejected,.sample-marker.unexamined{background:#d2a654;border-radius:1px;transform:translateX(-5px) rotate(45deg)}
+.sample-marker.active{box-shadow:0 0 0 2px #fff}

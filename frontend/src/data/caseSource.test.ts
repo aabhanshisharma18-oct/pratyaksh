@@ -2,7 +2,7 @@ import {beforeEach,describe,expect,it,vi} from 'vitest';
 import {apiCaseSchema,apiEvidenceSchema} from '../model';
 import {CaseSourceError,createApiCaseSource} from './caseSource';
 
-const caseBody={id:'CASE-2026-000001',title:'Persistent case',description:'Context',status:'Open',created_at:'2026-11-11T04:00:00Z',created_by:'Aadya',created_by_verified:false as const};
+const caseBody={id:'CASE-2026-000001',title:'Persistent case',description:'Context',status:'Open',created_at:'2026-11-11T04:00:00Z',last_activity_at:'2026-11-11T05:00:00Z',evidence_count:2,created_by:'Aadya',created_by_verified:false as const};
 const evidenceBody={case_id:caseBody.id,evidence_id:'EVID-1',filename:'sample.png',media_type:'image' as const,role:'Evidence' as const,size_bytes:12,sha256:'a'.repeat(64),hash_source:'client_declared' as const,registered_at:'2026-11-11T04:01:00Z',registered_by:'Aadya',registered_by_verified:false as const,preserved:false as const,preserved_evidence_id:null,duplicate_hash_of:[]};
 
 describe('case API schemas',()=>{
@@ -16,7 +16,7 @@ describe('apiCaseSource',()=>{
     const fetcher=vi.fn(async(_input:RequestInfo|URL,_init?:RequestInit)=>new Response(JSON.stringify({items:[caseBody],total:1,limit:50,offset:0}),{status:200,headers:{'Content-Type':'application/json'}}));
     const source=createApiCaseSource('http://127.0.0.1:8000',fetcher as typeof fetch);
     const cases=await source.listCases();
-    expect(cases[0]).toMatchObject({id:caseBody.id,title:'Persistent case',createdBy:'Aadya'});
+    expect(cases[0]).toMatchObject({id:caseBody.id,title:'Persistent case',createdBy:'Aadya',lastActivityAt:caseBody.last_activity_at,evidenceCount:2});
     expect(fetcher).toHaveBeenCalledOnce();
   });
   it('creates a case using the server-issued ID',async()=>{

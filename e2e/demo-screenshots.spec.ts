@@ -1,0 +1,3 @@
+import {test,expect} from '@playwright/test';import path from 'node:path';import {fileURLToPath} from 'node:url';import {createCaseUi,fixture,runUi,uploadUi} from './helpers';
+const screenshots=path.join(path.dirname(fileURLToPath(import.meta.url)),'..','docs','d4','screenshots');
+test('capture D4 offline-capable demo screens',async({page})=>{await createCaseUi(page,'D4 Demonstration');await page.screenshot({path:path.join(screenshots,'01-case.png'),fullPage:true});await uploadUi(page,fixture('valid.png'));await runUi(page);await expect(page.getByText('Inconclusive').first()).toBeVisible();await page.screenshot({path:path.join(screenshots,'02-findings.png'),fullPage:true})});

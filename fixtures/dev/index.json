@@ -3,7 +3,7 @@
   "data": {
     "fixture": true,
     "scenarios": [
-      {"id":"executive-impersonation","description":"Fictional multimedia review covering completed, partial, queued, running, failed and cancelled runs.","case_evidence":"./case-evidence.json","runs":["./runs/RUN-00a4.json","./runs/RUN-00a5.json","./runs/RUN-00a6.json","./runs/RUN-00a7.json","./runs/RUN-00a8.json","./runs/RUN-00a9.json"]},
+      {"id":"executive-impersonation","description":"Fictional multimedia review covering lifecycle states and immutable retry chains.","case_evidence":"./case-evidence.json","runs":["./runs/RUN-00a4.json","./runs/RUN-00a5.json","./runs/RUN-00a6.json","./runs/RUN-00a7.json","./runs/RUN-00a8.json","./runs/RUN-00a9.json","./runs/RUN-00aa.json","./runs/RUN-00ab.json","./runs/RUN-00ac.json","./runs/RUN-00ad.json","./runs/RUN-00ae.json"]},
       {"id":"evaluation-measured","description":"Small synthetic image and audio measurements with failures and sub-100% coverage.","evaluations":["./evaluation/image-test.json","./evaluation/audio-test.json"]},
       {"id":"evaluation-empty","description":"Video not evaluated and no-measurement UI states.","evaluations":["./evaluation/video.json","./evaluation/empty.json"]}
     ]

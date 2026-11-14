@@ -1,0 +1,102 @@
+{
+  "purpose": "Fictional synthetic provenance demonstration fixtures",
+  "records": [
+    {
+      "filename": "A-synthetic-base.png",
+      "description": "AI-generated fictional base photograph",
+      "derived_from": null,
+      "sha256": "d893ae11b5978fd0110906f8fef8f386acc540bde78b334661dd4b69f238c2b4",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "synthetic": true
+    },
+    {
+      "filename": "B-exact-copy.png",
+      "description": "Byte-for-byte copy of A",
+      "derived_from": "A-synthetic-base.png",
+      "sha256": "d893ae11b5978fd0110906f8fef8f386acc540bde78b334661dd4b69f238c2b4",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "synthetic": true
+    },
+    {
+      "filename": "C-cropped-view.png",
+      "description": "AI-edited crop-style reframing of the woman in A",
+      "derived_from": "A-synthetic-base.png",
+      "sha256": "2bd43f4a41261f2cf0349d22b4bf2fe75334c33a2b307b67f5059ffa1efa29d3",
+      "dimensions": [
+        1086,
+        1448
+      ],
+      "synthetic": true
+    },
+    {
+      "filename": "D-text-added.png",
+      "description": "AI-edited derivative with a cafe meetup text banner",
+      "derived_from": "A-synthetic-base.png",
+      "sha256": "07072addeeef933fe66e59e7f69a473ffd8b7f3b511f0e13d28e5f16d0930852",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "synthetic": true
+    },
+    {
+      "filename": "E-face-edited.png",
+      "description": "AI-edited derivative replacing the face of the man on the right",
+      "derived_from": "A-synthetic-base.png",
+      "sha256": "f569b0b1af83a16d44227700b3c7929582cc2d6e9923f65a62d4276e0b87cd2d",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "synthetic": true
+    },
+    {
+      "filename": "F-resaved-no-credentials.jpg",
+      "description": "JPEG re-save of A at quality 65 with embedded credentials omitted",
+      "derived_from": "A-synthetic-base.png",
+      "sha256": "5d540a1569372a8fb58b73f244ee4d0c5ceb5b4a23b04f3a9e8810187a00a7ba",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "content_origin": "AI-generated reference, deterministically re-encoded"
+    },
+    {
+      "filename": "G-unrelated-app-screenshot.png",
+      "description": "Self-captured Pratyaksh landing page screenshot",
+      "derived_from": null,
+      "sha256": "c34ab841a59a541c0d3c7d46c1a5bf912c2c6bafe73765f9243848468a9aca72",
+      "dimensions": [
+        1440,
+        6494
+      ],
+      "content_origin": "Application screenshot; includes synthetic-demo interface previews"
+    },
+    {
+      "filename": "H-independent-ai-scene.png",
+      "description": "Independent AI-generated lake and boat scene",
+      "derived_from": null,
+      "sha256": "ea95cbc339eaed4d4510bf2996244663bb5d23493a4e68d8ecce37dba7ae9dcd",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "synthetic": true
+    }
+  ],
+  "limitations": [
+    "All depicted people and the base photo are AI-generated.",
+    "Only B is guaranteed to have exactly the same bytes as A.",
+    "C is a generative reframing rather than an exact rectangular extraction of A.",
+    "D and E are generative edits and may change pixels outside the intended edit.",
+    "These samples demonstrate known generation relationships and do not measure real-photo detector accuracy.",
+    "No genuine camera identity, capture timestamp, or verified social-platform history is asserted.",
+    "No phone-original photograph has been identified. These eight fixtures must not be presented as an original-phone-photo benchmark."
+  ]
+}

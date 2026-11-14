@@ -57,7 +57,7 @@ def validate_manifest(manifest: dict) -> list[dict]:
         if not isinstance(sample["terms"], str) or not sample["terms"].strip():
             raise ValueError(f"terms must be documented for {sample_id}")
         if schema_version == "1.1":
-            if sample["media_type"] not in {"image", "audio"}:
+            if sample["media_type"] not in {"image", "audio", "video"}:
                 raise ValueError(f"unsupported media_type for {sample_id}")
             manipulation = sample["manipulation_type"]
             if not isinstance(manipulation, str) or not manipulation.strip():

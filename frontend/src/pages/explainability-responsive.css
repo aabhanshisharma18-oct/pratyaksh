@@ -1,0 +1,14 @@
+@media (max-width: 1300px) {
+  .xai-hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .xai-hero > div {
+    max-width: none;
+  }
+
+  .xai-hero label {
+    width: 100%;
+  }
+}

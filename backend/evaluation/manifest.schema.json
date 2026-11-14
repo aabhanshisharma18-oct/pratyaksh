@@ -26,7 +26,7 @@
           "label": {"enum": ["genuine", "synthetic"]},
           "split": {"enum": ["development", "test"]},
           "group_id": {"type": "string", "minLength": 1},
-          "media_type": {"enum": ["image", "audio"]},
+          "media_type": {"enum": ["image", "audio", "video"]},
           "manipulation_type": {"type": "string", "minLength": 1},
           "ground_truth": {
             "type": "object",

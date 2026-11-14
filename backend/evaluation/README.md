@@ -185,3 +185,52 @@ predictions. The tracked pilot report records the exact commands, thresholds
 and limitations. The evaluator now also reports 95% Wilson intervals and
 per-pair results; the intervals describe sample-level uncertainty and do not
 correct for repeated frames from the same source pair.
+
+## Evaluate the sampled-frame video candidate
+
+Copy `manifest.video.example.json` to an ignored local manifest and replace all
+placeholders with permitted genuine and manipulated videos. Videos derived from
+the same original, subject, source/target pair or manipulation sequence must use
+the same `group_id` and remain entirely in either development or test. Do not
+split frames from one video across development and test.
+
+For the already-downloaded DeepfakeTIMIT/VidTIMIT pilot archives, build a local
+320-video manifest with subject-pair-separated splits:
+
+```bash
+python -m evaluation.prepare_deepfaketimit_video
+```
+
+The preparer verifies the official DeepfakeTIMIT archive and normalizes both
+classes to silent H.264 MP4 at 25 fps and 512 x 384. Normalizing both classes
+reduces trivial container and audio-stream differences, but this remains a small,
+older face-swap pilot and cannot establish performance on modern generators.
+
+Run inference once on development data. The prediction file retains both summary
+values and every timestamped frame score:
+
+```bash
+python -m evaluation.run_video_manifest \
+  --manifest evaluation/manifest.deepfaketimit-video.local.json \
+  --split development \
+  --aggregation mean \
+  --output evaluation/predictions-video-mean-development.json
+
+python -m evaluation.reaggregate_video_predictions \
+  --predictions evaluation/predictions-video-mean-development.json \
+  --aggregation maximum \
+  --output evaluation/predictions-video-maximum-development.json
+```
+
+Each output includes the selected aggregation, input hash, timestamped frame
+signals, rejected samples and coverage. Compare coverage, subgroup failures and
+development metrics before selecting one aggregation. Then select its threshold
+using `evaluation.select_threshold` and freeze the aggregation, threshold, model
+revision, preprocessing version and sampling policy together.
+
+Only after that freeze, run `run_video_manifest` once on the held-out test split
+with the chosen aggregation and evaluate it with `evaluation.evaluate_predictions`.
+Report video-level counts and confidence intervals. Per-frame outputs from the
+same video are correlated and must not be counted as independent evaluation
+samples. The included motion-test MP4 checks execution only and has no authenticity
+ground truth, so it must not be used to claim accuracy.

@@ -1,0 +1,3 @@
+-r requirements-dev.txt
+-r requirements-provenance.txt
+pypdf>=5,<7

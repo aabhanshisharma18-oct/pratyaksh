@@ -13,6 +13,9 @@ modality-run envelope is `contracts/d1-run.schema.json`.
   image, video and audio separately.
 - `POST /api/d1/analyze-image` accepts a bounded static image and returns one
   traceable, inconclusive synthetic-media finding.
+- `POST /api/d1/analyze-video` accepts a bounded FFmpeg-decodable video, samples
+  actual presentation timestamps and returns per-frame candidate signals plus an
+  explicitly unvalidated aggregate.
 - `POST /api/d1/analyze-face-forgery` detects faces with YuNet and applies the
   optional SBI research candidate to each crop. The maximum face signal is
   reported without a final verdict.
@@ -26,6 +29,12 @@ modality-run envelope is `contracts/d1-run.schema.json`.
   hash as an inventory link. It does not upload or preserve the file.
 - `GET /api/cases/{case_id}/evidence` lists inventory links, optionally filtered
   by `role` or `media_type`.
+- `POST /api/findings` idempotently records an immutable canonical finding
+  snapshot so later reviewer notes can identify exactly what was reviewed.
+- `GET /api/findings?case_id=...` restores persisted finding snapshots for the
+  dashboard after refresh.
+- `POST /api/findings/{finding_id}/notes` appends a `reviewed` or `questioned`
+  analyst record. `GET` on the same collection returns notes oldest first.
 
 Missing models, invalid files, failed decoding and failed inference never become
 genuine results.
@@ -50,6 +59,28 @@ It has no application update or delete path, but it is an ordinary SQLite log,
 not a cryptographically protected or tamper-evident audit trail and not a chain
 of custody.
 
+Schema version 2 adds immutable `findings`, append-only `finding_notes`, and a
+separate `finding_events` operational log. The separate log deliberately avoids
+rewriting the version-1 `case_events.event_type` CHECK constraint. A
+`finding.note_added` event is ordinary SQLite operational history, not a
+tamper-evident audit or chain-of-custody record. Existing version-1 case and
+evidence rows are retained during the in-place upgrade.
+
+Reviewer-note status is stored as `reviewed | questioned`. The dashboard maps
+`reviewed` to its existing finding-level "Reviewed" presentation and leaves the
+machine finding's `review_status` and immutable JSON snapshot unchanged. Authors
+come only from the self-declared `X-Analyst-Name` header and always have
+`author_verified: false`.
+
+## Published evaluation drop
+
+The dashboard reads non-fixture evaluation JSON from
+`VITE_EVALUATION_BASE_URL/{image|audio|video}.json` and validates it against
+`contracts/evaluation-1.0.schema.json`. Aabhanshi publishes those files; D4 only
+reads and validates them. Missing files show an unavailable state and invalid
+files expose no partial metrics. The fixture-only dashboard evaluation contract
+remains separate.
+
 ## Evidence identity
 
 The image endpoint creates a `LOCAL-` identifier and does not claim preservation
@@ -70,6 +101,9 @@ a threshold, every successful result remains `inconclusive`.
   dimension 32 pixels.
 - Audio: 25 MiB; any FFmpeg-decodable format; mono 16 kHz conversion; 30-second
   decode bound; minimum one second; silence/low-energy rejection.
+- Video: 50 MiB; maximum 120 seconds; first decodable video stream; maximum 12
+  frames selected near actual presentation timestamps at roughly two-second
+  intervals.
 - AASIST evaluates the first 64,600 decoded samples (about 4.04 seconds), repeating
   shorter accepted audio to the model input length.
 
@@ -79,5 +113,5 @@ a threshold, every successful result remains `inconclusive`.
 - Authentication and authorization replacing the self-declared analyst header.
 - Tamper-evident operational audit storage and retention controls.
 - Asynchronous creation, status, timeout and cancellation.
-- Video frame and audio segment locations in original-timeline milliseconds.
+- Evaluated video aggregation and optional audio-track analysis.
 - Evaluated threshold versions, calibration state and aggregation identity.

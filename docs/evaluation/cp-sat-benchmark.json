@@ -1,0 +1,165 @@
+{
+  "fixture": "12 generated geometric controls; four related files plus eight unrelated source constructions",
+  "budget": 12,
+  "repeats": 3,
+  "untimed_warmups": 1,
+  "results": {
+    "all_pairs": {
+      "runtime_ms": [
+        1963.5618749998685,
+        1983.2302079994406,
+        1997.3770840006182
+      ],
+      "median_runtime_ms": 1983.2302079994406,
+      "eligible_visual_pairs": 65,
+      "selected_visual_pairs": 65,
+      "unexamined_visual_pairs": 0,
+      "planner_runtime_ms_last_run": 0.085,
+      "links_found": 6,
+      "reference_links_retained": 6,
+      "reference_links_missed": 0,
+      "link_ids": [
+        [
+          "IMG-01",
+          "IMG-02"
+        ],
+        [
+          "IMG-01",
+          "IMG-03"
+        ],
+        [
+          "IMG-01",
+          "IMG-04"
+        ],
+        [
+          "IMG-02",
+          "IMG-03"
+        ],
+        [
+          "IMG-02",
+          "IMG-04"
+        ],
+        [
+          "IMG-03",
+          "IMG-04"
+        ]
+      ],
+      "solver_status": "EXHAUSTIVE"
+    },
+    "greedy_12": {
+      "runtime_ms": [
+        1608.5654169983172,
+        1605.8745000009367,
+        1585.7197090008412
+      ],
+      "median_runtime_ms": 1605.8745000009367,
+      "eligible_visual_pairs": 65,
+      "selected_visual_pairs": 12,
+      "unexamined_visual_pairs": 53,
+      "planner_runtime_ms_last_run": 0.323,
+      "links_found": 6,
+      "reference_links_retained": 6,
+      "reference_links_missed": 0,
+      "link_ids": [
+        [
+          "IMG-01",
+          "IMG-02"
+        ],
+        [
+          "IMG-01",
+          "IMG-03"
+        ],
+        [
+          "IMG-01",
+          "IMG-04"
+        ],
+        [
+          "IMG-02",
+          "IMG-03"
+        ],
+        [
+          "IMG-02",
+          "IMG-04"
+        ],
+        [
+          "IMG-03",
+          "IMG-04"
+        ]
+      ],
+      "solver_status": "GREEDY_BASELINE"
+    },
+    "cp_sat_12": {
+      "runtime_ms": [
+        2212.0531250002387,
+        1637.9073329990206,
+        1622.3736249994545
+      ],
+      "median_runtime_ms": 1637.9073329990206,
+      "eligible_visual_pairs": 65,
+      "selected_visual_pairs": 12,
+      "unexamined_visual_pairs": 53,
+      "planner_runtime_ms_last_run": 30.022,
+      "links_found": 6,
+      "reference_links_retained": 6,
+      "reference_links_missed": 0,
+      "link_ids": [
+        [
+          "IMG-01",
+          "IMG-02"
+        ],
+        [
+          "IMG-01",
+          "IMG-03"
+        ],
+        [
+          "IMG-01",
+          "IMG-04"
+        ],
+        [
+          "IMG-02",
+          "IMG-03"
+        ],
+        [
+          "IMG-02",
+          "IMG-04"
+        ],
+        [
+          "IMG-03",
+          "IMG-04"
+        ]
+      ],
+      "solver_status": "OPTIMAL"
+    }
+  },
+  "scale_check": {
+    "items": 100,
+    "eligible_pairs": 4950,
+    "budget": 200,
+    "selected_pairs": 200,
+    "covered_items": 100,
+    "solver_status": "OPTIMAL",
+    "runtime_ms": 268.54879199891,
+    "scope": "Planner-only synthetic integer priorities. No images decoded or SIFT/RANSAC run; not end-to-end 100-file support."
+  },
+  "notes": [
+    "Local pilot only, not deepfake detection accuracy or a representative provenance benchmark.",
+    "Reference retention is relative to this matcher, not ground-truth recall.",
+    "Timing includes per-file preparation and metadata checks, not only pair matching.",
+    "All measured runs are reported; no faster-run selection. Current public upload cap stays 12.",
+    "Fewer pair comparisons do not establish better matching accuracy or faster end-to-end processing."
+  ],
+  "recorded_at": "2026-11-14T13:43:10.115609+00:00",
+  "environment": {
+    "python": "3.13.9",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "ortools": "9.15.6755",
+    "opencv-python-headless": "4.14.0.94",
+    "Pillow": "12.3.0",
+    "numpy": "2.5.4"
+  },
+  "source_fingerprints": {
+    "backend/provenance.py": "01a011bb019e6c7bce7f1fb22d59590469160c80e9a45b840ebefcbf61ec14e0",
+    "backend/provenance_pair_planner.py": "ded3ef0c938cd663fe2796021ed13ec3ad9168c62bb3d6535ec75081dc775595",
+    "backend/evaluation/benchmark_pair_selection.py": "69aeda189ed137c5bc70e5c259e92eff0a5ecc81e58398b7fba7e37150cba307"
+  }
+}

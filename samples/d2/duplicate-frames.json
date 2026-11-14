@@ -1,0 +1,10 @@
+{
+  "source_fps": 5,
+  "duplicate_pairs": [
+    [
+      2,
+      7
+    ]
+  ],
+  "note": "Frames 2 and 7 were deliberately made identical before MJPEG encoding."
+}

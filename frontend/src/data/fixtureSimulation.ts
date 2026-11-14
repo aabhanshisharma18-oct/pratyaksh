@@ -1,0 +1,10 @@
+import type {Evidence,Finding} from '../model';import {MemoryRunSource,restampFindings} from './runSource';import {createRunId} from '../runs/retry';import {transitionRun} from '../runs/runLifecycle';import type {RunRecord,RunStatus} from '../runs/types';
+export const SIMULATION_MARKER='__PRATYAKSH_SIMULATION__';
+export type SimulationOutcome=Extract<RunStatus,'completed'|'partial'|'failed'|'unsupported'|'cancelled'>;
+export type SimulationClock={now:()=>string;schedule:(callback:()=>void,delay:number)=>unknown};
+export function simulateExistingFixtureRun(source:MemoryRunSource,run:RunRecord,templates:readonly Finding[],outcome:SimulationOutcome='completed',clock:SimulationClock={now:()=>new Date().toISOString(),schedule:(cb,delay)=>setTimeout(cb,delay)}){
+ clock.schedule(()=>{source.transition(run.run_id,'running',clock.now());clock.schedule(()=>{const running=source.getRun(run.run_id)!;let final=transitionRun(running,outcome,clock.now());if(outcome==='completed'||outcome==='partial')final={...final,findings:restampFindings(templates,final)};if(outcome==='failed')final={...final,errors:[{code:'SIMULATED_FAILURE',message:'Scripted fixture failure; no analysis executed.',retryable:true}]};source.replace(final)},3000)},1500);return run
+}
+export function simulateFixtureRun(source:MemoryRunSource,evidence:Evidence,templates:readonly Finding[],outcome:SimulationOutcome='completed',clock:SimulationClock={now:()=>new Date().toISOString(),schedule:(cb,delay)=>setTimeout(cb,delay)}){
+ const run:RunRecord={schema_version:'1.1',run_id:createRunId(),evidence_id:evidence.id,modality:evidence.type,execution_status:'queued',requested_at:clock.now(),started_at:null,completed_at:null,configuration:{name:'simulated fixture',version:'fixture-1.1'},configuration_version:'fixture-1.1',findings:[],coverage:null,artifacts:[],errors:[],fixture:true,attempt:1,retry_of:null,origin:'fixture',requested_channels:['synthetic_media','tampering','integrity','provenance'],status_reason:'SIMULATED FIXTURE RUN · no analysis executed',simulated:true};source.add(run);return simulateExistingFixtureRun(source,run,templates,outcome,clock)
+}
