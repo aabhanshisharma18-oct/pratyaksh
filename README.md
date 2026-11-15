@@ -49,7 +49,6 @@ The Desktop still-image directory currently contains **190,335 image files**. Th
 
 Dataset sources: [DeepfakeTIMIT/VidTIMIT](https://conradsanderson.id.au/vidtimit/), [Celeb-DF](https://github.com/yuezunli/celeb-deepfakeforensics), [Tiny-GenImage](https://huggingface.co/datasets/TheKernel01/Tiny-GenImage), [ASVspoof](https://www.asvspoof.org/index2019.html).
 
-FaceForensics++ c23 is the original SBI checkpoint's pretraining source; that does **not** mean our team downloaded or locally trained on that entire dataset. DeepfakeBench, Effort and datasets merely discussed in research lists have not been integrated/trained on by this README update. The proposed new-dataset expansion is on hold; **no new dataset media was downloaded in that expansion**.
 
 ## Measured results
 
