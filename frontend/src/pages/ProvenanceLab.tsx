@@ -495,14 +495,14 @@ export function ProvenanceLab({baseUrl,initialCaseId,initialAnalysisId,initialRe
       .map(right=>({left,right})));
   return <div className="provenance-lab">
     <PageHeading eyebrow="EXAMINATION" title="Provenance & Source Attribution"
-      subtitle="Compare evidence files, inspect matching regions, and export the supporting findings." className="provenance-heading">
+      subtitle="Compare files and inspect their links." className="provenance-heading">
       {report&&<div className="provenance-actions">
         <button className="button primary" disabled={busy||!!working} onClick={generatePdf}><Printer size={15}/>{translate("Generate PDF report")}</button>
         <button className="button secondary" disabled={busy||!!working} onClick={exportReport}><Download size={15}/>{translate("Export JSON")}</button>
         <button className="button secondary" disabled={busy||!!working} onClick={downloadBundle}><Download size={15}/>{translate("Evidence package")}</button>
       </div>}
     </PageHeading>
-    <div className="feature-help"><strong>{translate("Find connections between files")}</strong><p>{translate("Add related files to compare shared visual content. A connection does not prove who created a file or which version came first. If you have only one file, comparison is optional; available metadata and credentials can still be inspected.")}</p></div>
+
     <section className="panel provenance-case" aria-label={translate("Provenance case context")}>
       <label>{translate("Case ID")}<input value={caseId} maxLength={100} disabled={!!caseEvidence||busy||!!working} onChange={event=>{setCaseId(event.target.value);setHistory([])}}/></label>
       <label>{translate("Case title")}<input value={caseTitle} maxLength={200} disabled={busy||!!working} onChange={event=>setCaseTitle(event.target.value)}/></label>
@@ -513,7 +513,7 @@ export function ProvenanceLab({baseUrl,initialCaseId,initialAnalysisId,initialRe
     {!caseEvidence&&!report&&lastAnalysis&&<p className="provenance-resume"><button className="button secondary" disabled={busy||!!working} onClick={()=>restore(lastAnalysis)}>{translate("Resume last saved analysis")}</button></p>}
     {caseEvidence?<section className="panel provenance-area-picker">
       <h2>{translate("Preserved case evidence")}</h2>
-      <p>{translate("Choose at least two case files. For screenshots, open the photo-area picker before comparing.")}</p>
+      <p>{translate("Select at least two files. For screenshots, select the photo area.")}</p>
       {caseEvidence.length===0&&<p>{translate("Add evidence to this case to start a comparison.")}</p>}
       {caseEvidence.map(item=><div className="provenance-actions" key={item.id}>
         <label><input type="checkbox" checked={selectedCaseIds.includes(item.id)} disabled={busy||!!working}
@@ -549,7 +549,7 @@ export function ProvenanceLab({baseUrl,initialCaseId,initialAnalysisId,initialRe
           {[8,16,32,48].map(value=><option key={value} value={value}>CP-SAT · up to {value} pairs</option>)}
         </select>
       </label>
-      <p>CP-SAT chooses which file pairs receive the expensive visual check, while including each file that has an eligible comparison. Exact-copy and metadata checks still examine every pair. Unselected pairs remain unexamined.</p>
+      <details><summary>How the budget works</summary><p>CP-SAT selects pairs for visual checks. Hash and metadata checks still cover every pair.</p></details>
     </section>
     {working&&<p role="status" className="provenance-progress"><Loader2 size={16} className="spin"/>{working}…</p>}
     {packageAnchor&&<section className="panel provenance-verification" role="status"><h2>{translate("Evidence package ready")}</h2>
@@ -575,7 +575,7 @@ export function ProvenanceLab({baseUrl,initialCaseId,initialAnalysisId,initialRe
     </div>}
     {!report&&!busy&&<section className="provenance-empty panel">
       <GitBranch size={34}/><h2>{translate(images.length?'Ready to compare':'Follow the connections between files')}</h2>
-      <p>{translate("Upload the original reference and related copies together. The comparison checks exact duplicates, shared image regions and recorded source information.")}</p>
+      <p>{translate("Choose media files to compare")}</p>
       <p>{translate("Source identity and editing order depend on the evidence available in the files.")}</p>
     </section>}
     {busy&&<div role="status" className="provenance-progress"><Loader2 size={18} className="spin"/>{translate("Computing file hashes, reading metadata and matching image features.")}</div>}
@@ -604,8 +604,7 @@ export function ProvenanceLab({baseUrl,initialCaseId,initialAnalysisId,initialRe
       {report.pair_selection && <section className="panel" aria-label="Pair selection coverage">
         <h2>Comparison coverage · {report.pair_selection.strategy==='cp_sat'?'CP-SAT':'All eligible pairs'}</h2>
         <p><strong>{report.pair_selection.selected_visual_pairs} / {report.pair_selection.eligible_visual_pairs}</strong> eligible file pairs selected for visual verification · {report.pair_selection.cheap_checked_pairs} pairs checked for exact copies and metadata.</p>
-        <p>Planner: {report.pair_selection.solver_status} · {report.pair_selection.planning_runtime_ms.toFixed(1)} ms. These are execution measurements, not detection accuracy.</p>
-        <p>{report.pair_selection.limitation}</p>
+        <details><summary>Planner details</summary><p>{report.pair_selection.solver_status} · {report.pair_selection.planning_runtime_ms.toFixed(1)} ms planning time</p><p>{report.pair_selection.limitation}</p></details>
         <details><summary>Unexamined visual pairs ({report.pair_selection.unexamined_pairs.length})</summary>
           {report.pair_selection.unexamined_pairs.length ? <ul>{report.pair_selection.unexamined_pairs.map(pair=><li key={pair.left_id+'-'+pair.right_id}>{report.images.find(item=>item.id===pair.left_id)?.filename??pair.left_id} ↔ {report.images.find(item=>item.id===pair.right_id)?.filename??pair.right_id}: not examined</li>)}</ul>:<p>No eligible visual pairs were omitted.</p>}
         </details>
@@ -636,10 +635,45 @@ export function ProvenanceLab({baseUrl,initialCaseId,initialAnalysisId,initialRe
         {audit.entries.map((entry:any)=><details key={entry.sequence}><summary>{entry.sequence} · {entry.action} · {entry.actor} · {formatDate(entry.timestamp)}</summary>
           <pre>{JSON.stringify(entry,null,2)}</pre></details>)}
       </section>}
+      <section className="panel provenance-area-picker" aria-label="Compare matched files">
+        <h2>Compare files side by side</h2>
+        {report.relationships.length ? <label>Connection <select value={selected ?? ''}
+          onChange={event=>event.target.value ? selectPair(event.target.value) : setSelected(null)}>
+          <option value="">Select a connection</option>
+          {report.relationships.map(edge=><option key={edge.id} value={edge.id}>
+            {report.images.find(file=>file.id===edge.left_id)?.filename} ↔ {report.images.find(file=>file.id===edge.right_id)?.filename} · {titleFor(edge)}
+          </option>)}
+        </select></label> : <p>No supported connections found.</p>}
+      </section>
+      {pair&&left&&right&&<section ref={citedComparison} id="provenance-comparison" className="panel provenance-comparison">
+        <div className="provenance-section-heading"><h2>{titleFor(pair)}</h2>
+          {pair.support&&!frameTimes&&<label><input type="checkbox" checked={showRegions} onChange={event=>setShowRegions(event.target.checked)}/>{translate("Show matching points and regions")}</label>}
+        </div>
+        <p>{pair.explanation}</p>
+        {pair.metadata_fields&&<div className="provenance-link-evidence">{Object.entries(pair.metadata_fields).map(([key,value])=><p key={key}>{key} {translate("agrees ·")} {value}</p>)}</div>}
+        {pair.manifest_labels&&<div className="provenance-link-evidence">{pair.manifest_labels.map(value=><p className="mono" key={value}>{value}</p>)}</div>}
+        {pair.kind==='exact_copy'&&<div className="provenance-link-evidence"><p className="mono">{translate("Both SHA-256 values ·")} {left.sha256}</p></div>}
+        {frameTimes&&<p>{translate("Strongest sampled match at")} {(frameTimes[0]/1000).toFixed(2)} {translate("s and")} {(frameTimes[1]/1000).toFixed(2)} {translate("s.")}
+          {' '}{pair.support?.sample_pair_count} {translate("sampled frame pairs compared.")}</p>}
+        {pair.support&&!frameTimes&&<div className="provenance-link-evidence">
+          <p>{pair.support.candidate_search} {translate("· dHash distance")} {pair.support.hash_distance}</p>
+          <button className="button secondary" onClick={()=>setShowDifference(value=>!value)}>{showDifference?'Hide':'Show'} {translate("aligned difference overlay")}</button>
+          {showDifference&&<figure><img className="provenance-difference" src={provenanceEndpoint(baseUrl,'/reports/'+report.analysis_id+'/relationships/'+pair.id+'/difference')} alt={translate("Aligned image with residual pixel differences highlighted in red")}/>
+            <figcaption>{translate("Red marks residual differences in the aligned overlap. Compression, lighting and alignment can also produce these differences.")}</figcaption></figure>}
+        </div>}
+        <div className="provenance-compare-images">
+          <figure><ImagePreview src={urlFor(left)} name={left.filename} mediaType={left.media_type} timestamp={frameTimes?.[0]} area={left.comparison_area} region={showRegions?pair.support?.left_region:undefined} points={showRegions?pair.support?.point_pairs?.map(point=>[point[0],point[1]]):undefined}/>
+            <figcaption>{left.id} · {left.filename}</figcaption></figure>
+          <figure><ImagePreview src={urlFor(right)} name={right.filename} mediaType={right.media_type} timestamp={frameTimes?.[1]} area={right.comparison_area} region={showRegions?pair.support?.right_region:undefined} points={showRegions?pair.support?.point_pairs?.map(point=>[point[2],point[3]]):undefined}/>
+            <figcaption>{right.id} · {right.filename}</figcaption></figure>
+        </div>
+        {pair.support&&!frameTimes&&<p className="muted small">{pair.support.point_pairs?'Teal dots show sampled points accepted by RANSAC. ':''}{translate("Dashed boxes mark selected photo areas. They show shared regions and do not locate an edit. Geometric agreement")} {(pair.support.geometric_inlier_ratio*100).toFixed(0)}{translate("% of candidate feature matches.")}</p>}
+      </section>}
       <div className="provenance-workspace">
-        <section className="panel provenance-relations">
+        <details className="panel provenance-relations">
+          <summary>Relationship map</summary>
           <div className="provenance-section-heading">
-            <div><h2>Evidence Relationship Map</h2><p className="muted small">Drag files to rearrange the map. Drag the background to pan, or select a link to see its evidence.</p></div>
+            <div><h2>Evidence Relationship Map</h2><p className="muted small">Select a link to see its evidence.</p></div>
             <span className="badge">{report.images.length} files · {visibleRelationships.length} links shown</span>
           </div>
           <div className="provenance-map-tools" role="group" aria-label="Filter connections">
@@ -650,7 +684,7 @@ export function ProvenanceLab({baseUrl,initialCaseId,initialAnalysisId,initialRe
               </button>)}
           </div>
           <RelationshipGraph key={report.analysis_id} report={report} onSelect={selectPair} selected={selected} onFile={index=>{setActiveImage(index);setSelected(null);setShowDifference(false)}} filter={filter} activeImage={activeImage} imageUrl={urlFor}/>
-          <p className="provenance-map-help">Links show the type of evidence found. Editing order requires additional evidence.</p>
+          <p className="provenance-map-help">Creation order remains unverified.</p>
           <div className="provenance-connections" aria-label="Connections">
             {visibleRelationships.length===0?<p>No supported connections of this type found. This does not prove files are unrelated.</p>:visibleRelationships.map(edge=>
               <button key={edge.id} className={selected===edge.id?'active':''} onClick={()=>selectPair(edge.id)} aria-pressed={selected===edge.id}>
@@ -658,7 +692,7 @@ export function ProvenanceLab({baseUrl,initialCaseId,initialAnalysisId,initialRe
                 <span><strong>{titleFor(edge)} · {linkProof(edge)}</strong><small>{report.images.find(item=>item.id===edge.left_id)?.filename} ↔ {report.images.find(item=>item.id===edge.right_id)?.filename}</small></span>
               </button>)}
           </div>
-        </section>
+        </details>
         <div className="provenance-map-sidebar">
         {pair&&left&&right&&<section className="panel provenance-map-selection" style={{borderInlineStartColor:edgeStyles[pair.kind].color}} aria-label="Selected connection evidence">
           <span className="muted small">SELECTED CONNECTION</span>
@@ -714,30 +748,7 @@ export function ProvenanceLab({baseUrl,initialCaseId,initialAnalysisId,initialRe
         </aside>
         </div>
       </div>
-      {pair&&left&&right&&<section ref={citedComparison} id="provenance-comparison" className="panel provenance-comparison">
-        <div className="provenance-section-heading"><h2>{titleFor(pair)}</h2>
-          {pair.support&&!frameTimes&&<label><input type="checkbox" checked={showRegions} onChange={event=>setShowRegions(event.target.checked)}/>{translate("Show matching points and regions")}</label>}
-        </div>
-        <p>{pair.explanation}</p>
-        {pair.metadata_fields&&<div className="provenance-link-evidence">{Object.entries(pair.metadata_fields).map(([key,value])=><p key={key}>{key} {translate("agrees ·")} {value}</p>)}</div>}
-        {pair.manifest_labels&&<div className="provenance-link-evidence">{pair.manifest_labels.map(value=><p className="mono" key={value}>{value}</p>)}</div>}
-        {pair.kind==='exact_copy'&&<div className="provenance-link-evidence"><p className="mono">{translate("Both SHA-256 values ·")} {left.sha256}</p></div>}
-        {frameTimes&&<p>{translate("Strongest sampled match at")} {(frameTimes[0]/1000).toFixed(2)} {translate("s and")} {(frameTimes[1]/1000).toFixed(2)} {translate("s.")}
-          {' '}{pair.support?.sample_pair_count} {translate("sampled frame pairs compared.")}</p>}
-        {pair.support&&!frameTimes&&<div className="provenance-link-evidence">
-          <p>{pair.support.candidate_search} {translate("· dHash distance")} {pair.support.hash_distance}</p>
-          <button className="button secondary" onClick={()=>setShowDifference(value=>!value)}>{showDifference?'Hide':'Show'} {translate("aligned difference overlay")}</button>
-          {showDifference&&<figure><img className="provenance-difference" src={provenanceEndpoint(baseUrl,'/reports/'+report.analysis_id+'/relationships/'+pair.id+'/difference')} alt={translate("Aligned image with residual pixel differences highlighted in red")}/>
-            <figcaption>{translate("Red marks residual differences in the aligned overlap. Compression, lighting and alignment can also produce these differences.")}</figcaption></figure>}
-        </div>}
-        <div className="provenance-compare-images">
-          <figure><ImagePreview src={urlFor(left)} name={left.filename} mediaType={left.media_type} timestamp={frameTimes?.[0]} area={left.comparison_area} region={showRegions?pair.support?.left_region:undefined} points={showRegions?pair.support?.point_pairs?.map(point=>[point[0],point[1]]):undefined}/>
-            <figcaption>{left.id} · {left.filename}</figcaption></figure>
-          <figure><ImagePreview src={urlFor(right)} name={right.filename} mediaType={right.media_type} timestamp={frameTimes?.[1]} area={right.comparison_area} region={showRegions?pair.support?.right_region:undefined} points={showRegions?pair.support?.point_pairs?.map(point=>[point[2],point[3]]):undefined}/>
-            <figcaption>{right.id} · {right.filename}</figcaption></figure>
-        </div>
-        {pair.support&&!frameTimes&&<p className="muted small">{pair.support.point_pairs?'Teal dots show sampled points accepted by RANSAC. ':''}{translate("Dashed boxes mark selected photo areas. They show shared regions and do not locate an edit. Geometric agreement")} {(pair.support.geometric_inlier_ratio*100).toFixed(0)}{translate("% of candidate feature matches.")}</p>}
-      </section>}
+
       <section className="panel provenance-review">
         <h2>{translate("Reviewer interpretations")}</h2>
         <p>{translate("Record your reasoning separately from machine observations. Notes are attributed to a self-declared reviewer and retained in immutable analysis revisions.")}</p>
