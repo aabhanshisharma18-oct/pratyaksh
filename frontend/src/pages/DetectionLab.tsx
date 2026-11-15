@@ -36,7 +36,7 @@ type Bookmark = {
 
 const formats = /\.(jpe?g|png|webp)$/i;
 const modes = [
-  {id:'image',label:'Image'},
+  {id:'image',label:'Photo'},
   {id:'video',label:'Video'},
   {id:'voice',label:'Voice'},
 ] as const;
@@ -69,7 +69,7 @@ function categorize(file: File): QueuedFile {
   return {file,mode};
 }
 
-export function DetectionLab({baseUrl}: {baseUrl: string}) {
+export function DetectionLab({baseUrl,embedded=false}: {baseUrl: string; embedded?: boolean}) {
   const picker = useRef<HTMLInputElement>(null);
   const referencePicker = useRef<HTMLInputElement>(null);
   const [referenceFile,setReferenceFile] = useState<File|null>(null);
@@ -295,11 +295,10 @@ export function DetectionLab({baseUrl}: {baseUrl: string}) {
   const comparing = imageView==='compare' && Boolean(referenceFile) && !['model','shadows'].includes(filter);
 
   return <form className="detection-lab" onSubmit={submit} aria-busy={busy}>
-    <div className="detection-title">
+    {!embedded && <div className="detection-title">
       <h1>{translate("Deepfake & Synthetic Media Detection")}</h1>
       <span>PRATYAKSH</span>
-    </div>
-    <div className="feature-help"><strong>{translate("Check for AI manipulation")}</strong><p>{translate("Add a file, choose a check, then read its result and limitations. A model signal alone does not prove that a file is real or fake.")}</p><p>{translate("No clear conclusion means the check was inconclusive. Could not run means the check was unavailable; these are different outcomes.")}</p></div>
+    </div>}
     <div className="detection-mode" aria-label={translate("Evidence mode")}>
       {modes.map(item=><button key={item.id} type="button" aria-pressed={mode===item.id}
         onClick={()=>setMode(item.id)}>{translate(item.label)}</button>)}
@@ -412,7 +411,7 @@ export function DetectionLab({baseUrl}: {baseUrl: string}) {
             onError={()=>setError('Image preview could not be decoded.')}
             style={{width:zoom+'%',filter:'brightness('+brightness+'%) contrast('+contrast+'%) saturate('+saturation+'%)'}}/>}
           {!file||!preview ? <div className="detection-stage-empty"><Image size={30}/><strong>{translate("No evidence loaded")}</strong><p>{translate("Add files to open an image.")}</p></div> :
-            showFaces && scan?.face_analysis ? <FaceAnalysisViewer key={scan.run_id} src={preview} analysis={scan.face_analysis}
+            showFaces && scan?.face_analysis ? <FaceAnalysisViewer key={scan.run_id} src={preview} analysis={scan.face_analysis} file={file} baseUrl={baseUrl} sha256={scan.sha256}
               modelVersion={scan.findings.find(finding=>finding.finding_id===scan.face_analysis?.finding_id)?.method_version}/> :
             filter==='shadows' ? <ShadowInspection src={preview} lines={shadowLines} onChange={setShadowLines}/> :
             comparing ? inspection && referenceInspection && localFilter ?

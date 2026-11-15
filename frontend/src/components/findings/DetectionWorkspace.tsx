@@ -1,3 +1,5 @@
+import {caseOriginalUrl} from '../../data/caseSource';
+import {FaceScoreStability} from '../../pages/FaceScoreStability';
 import {translate} from '../../i18n';
 import type {DetectionScan} from '../../data/detectionScan';
 import {useEffect,useState, type ReactNode} from 'react';
@@ -24,6 +26,7 @@ type Props = {
   scanning: boolean;
   scan?: DetectionScan;
   scanError?: string;
+  detectionBaseUrl?: string;
   onAttachSample?: () => void;
   renderFindings: (findings: Finding[], channels: readonly Channel[]) => ReactNode;
 };
@@ -33,7 +36,7 @@ function findingsFor(layer: typeof layers[number]['id'], evidence: Evidence, fin
   return findings.filter(finding=>finding.category===layer);
 }
 
-export function DetectionWorkspace({evidence, findings, selectedFindingId, onReport, onRun, onVerify, verifying, onAttachSample, renderFindings, scanning, scan, scanError}: Props) {
+export function DetectionWorkspace({evidence, findings, selectedFindingId, onReport, onRun, onVerify, verifying, onAttachSample, renderFindings, scanning, scan, scanError, detectionBaseUrl}: Props) {
   const defaultLayer=()=>'synthetic_media' as const;
   const restored=readSession(`pratyaksh-layer:${evidence.id}`);
   const [active, setActive] = useState<typeof layers[number]['id']>(()=>layers.some(item=>item.id===restored)?restored as typeof layers[number]['id']:defaultLayer());
@@ -77,6 +80,17 @@ export function DetectionWorkspace({evidence, findings, selectedFindingId, onRep
       {results.length ? renderFindings(results, layer.channels) : <div className="detection-summary">
         <h2>{layer.title}</h2><p>{translate("No results are available for this layer.")}</p>
       </div>}
+      {active === 'synthetic_media' && evidence.type === 'image' && !evidence.fixture &&
+        evidence.source && detectionBaseUrl && <FaceScoreStability baseUrl={detectionBaseUrl}
+          expectedHash={/^[a-f0-9]{64}$/i.test(evidence.hash) ? evidence.hash : undefined}
+          loadImage={async signal => {
+            const source = evidence.preserved && evidence.caseId
+              ? caseOriginalUrl(evidence.caseId, evidence.id)
+              : evidence.source!;
+            const response = await fetch(source, {signal});
+            if (!response.ok) throw new Error('The evidence photo could not be read.');
+            return response.blob();
+          }}/>}
     </section>
   </>;
 }

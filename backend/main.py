@@ -18,9 +18,12 @@ from threading import BoundedSemaphore
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, ImageOps, UnidentifiedImageError
+from face_score_stability import compare_face_scores
 
 from provenance import router as provenance_router, FORMATS as PROVENANCE_IMAGE_FORMATS, latest_case_analysis
 from case_briefing import create_briefing_router
+from automation import CaseAutomation, create_automation_router
+from automation_checks import authenticate as authenticate_zip_item, relate as relate_zip_items
 from cases import get_case_repository
 from cases import router as cases_router
 from reports.router import create_reports_router
@@ -399,6 +402,32 @@ def analyze_video(file: UploadFile = File(...)):
             for frame in sampled.get("frames", []):
                 frame["image"].close()
         file.file.close()
+        SLOTS.release()
+
+
+@app.post("/api/d1/face-score-stability")
+def face_score_stability(file: UploadFile = File(...), comparison: UploadFile | None = File(None)):
+    if not SLOTS.acquire(blocking=False):
+        raise HTTPException(503, "Another scan is running. Try again shortly.")
+    try:
+        raw, image = _decode_image_upload(file)
+        if image.width * image.height > 24_000_000:
+            raise HTTPException(413, "Score stability supports images up to 24 megapixels.")
+        copy_raw, copy_image = _decode_image_upload(comparison) if comparison else (None, None)
+        if copy_image is not None:
+            if copy_image.width * copy_image.height > 24_000_000:
+                raise HTTPException(413, "Score stability supports images up to 24 megapixels.")
+            aspect_ratio_change = abs(copy_image.width * image.height / (copy_image.height * image.width) - 1)
+            if aspect_ratio_change > 0.02:
+                raise HTTPException(422, "Choose a comparison copy with the same framing and aspect ratio.")
+        try:
+            result = compare_face_scores(image, face_forgery_detector, copy_image)
+        except (ImportError, FileNotFoundError, OSError, ValueError, KeyError):
+            raise HTTPException(503, "SBI could not score this comparison. Check the model setup.")
+        return {"sha256": hashlib.sha256(raw).hexdigest(),
+                "comparison_sha256": hashlib.sha256(copy_raw).hexdigest() if copy_raw else None,
+                **result}
+    finally:
         SLOTS.release()
 
 
@@ -830,3 +859,10 @@ app.include_router(
     create_runs_router(run_repository, run_scheduler, ROOT / "data" / "evidence"),
     prefix="/api",
 )
+
+case_automation = CaseAutomation(
+    case_repository, run_repository, _persistent_run_worker,
+    lambda job, item, evidence, raw: authenticate_zip_item(case_repository, job, item, evidence, raw),
+    lambda job, items: relate_zip_items(case_repository, job, items),
+)
+app.include_router(create_automation_router(case_automation), prefix="/api")

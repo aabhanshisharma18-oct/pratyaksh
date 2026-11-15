@@ -1,9 +1,10 @@
+import {FaceScoreStability} from './FaceScoreStability';
 import {translate} from '../i18n';
 import {useState} from 'react';
 import {faceScoreMeaning} from '../data/scoreMeaning';
 import type {FaceAnalysis} from '../data/detectionScan';
 
-export function FaceAnalysisViewer({src,analysis,modelVersion}: {src: string; analysis: FaceAnalysis; modelVersion?: string}) {
+export function FaceAnalysisViewer({src,analysis,modelVersion,file,baseUrl,sha256}: {src: string; analysis: FaceAnalysis; modelVersion?: string; file?: File|null; baseUrl?: string; sha256?: string}) {
   const [selected,setSelected] = useState<number|null>(null);
   const [showBoxes,setShowBoxes] = useState(true);
   return <div className="face-analysis">
@@ -38,5 +39,7 @@ export function FaceAnalysisViewer({src,analysis,modelVersion}: {src: string; an
       <p>{translate("A low score can miss an edited face. These scores cannot tell you what percentage of a face is AI-generated.")}</p>
     </>}
     {analysis.faces_truncated && <p role="status">{translate("Only the eight largest detected faces were examined.")}</p>}
+    {file && baseUrl && analysis.faces.length > 0 && <FaceScoreStability
+      baseUrl={baseUrl} loadImage={async () => file} initialFace={selected ?? 0} expectedHash={sha256}/>}
   </div>;
 }

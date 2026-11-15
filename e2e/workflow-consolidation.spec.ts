@@ -4,7 +4,7 @@ import {createCaseUi,fixture,runUi,uploadUi} from './helpers';
 test('legacy workflow routes redirect to consolidated destinations',async({page})=>{
  await page.goto('/#/detection',{waitUntil:'domcontentloaded'});
  await expect(page).toHaveURL(/#\/analysis$/);
- await expect(page.getByRole('heading',{name:'Run the applicable checks once'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Media Analysis'})).toBeVisible();
  await page.goto('/#/explainability',{waitUntil:'domcontentloaded'});
  await expect(page).toHaveURL(/#\/review$/);
  await expect(page.getByRole('heading',{name:'Review & Report'})).toBeVisible();

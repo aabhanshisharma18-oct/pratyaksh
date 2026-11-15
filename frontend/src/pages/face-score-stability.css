@@ -1,0 +1,10 @@
+.face-stability {padding: 1rem; min-width: 0; border-top: 1px solid var(--border);}
+.face-stability > label {display: block; margin-block: .8rem;}
+.face-stability-grid {display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .6rem; margin-block: .8rem;}
+.face-stability-grid article {min-width: 0; padding: .5rem; border: 1px solid var(--border); border-radius: 6px;}
+.face-stability-preview {position: relative; margin-block: .4rem;}
+.face-stability-preview img {display: block; width: 100%; height: auto;}
+.face-stability-preview svg {position: absolute; inset: 0; width: 100%; height: 100%;}
+.face-stability-preview rect {fill: none; stroke: #2b78b9; stroke-width: 2px;}
+.face-stability code {overflow-wrap: anywhere;}
+@media (max-width: 580px) {.face-stability-grid {grid-template-columns: 1fr;}}
