@@ -3,12 +3,12 @@ import hashlib, os, re, uuid
 from fastapi import UploadFile
 from sqlalchemy import select, text
 from ..db import CaseCounter, Evidence, utc_now
-CASE_PATTERN=re.compile(r"^CASE-(\d{4})-(\d{3})$")
+CASE_PATTERN=re.compile(r"^CASE-(\d{4})-(\d{3,6})$")
 
 class IntakeService:
     def __init__(self,config,database,audit): self.config,self.database,self.audit=config,database,audit
     def reserve_id(self,case_id):
-        if not CASE_PATTERN.fullmatch(case_id): raise ValueError("case_id must use CASE-YYYY-NNN")
+        if not CASE_PATTERN.fullmatch(case_id): raise ValueError("case_id must use CASE-YYYY-NNN or CASE-YYYY-NNNNNN")
         with self.database.session() as session:
             session.execute(text("BEGIN IMMEDIATE")); counter=session.get(CaseCounter,case_id)
             if counter is None: counter=CaseCounter(case_id=case_id,next_value=2);session.add(counter);number=1
