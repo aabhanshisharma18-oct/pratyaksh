@@ -164,18 +164,18 @@ export default function Landing({onAnalyse,onReport,onPersonal}:LandingProps){
         <div className="landing-container">
           <h2 id="start-title">{t('landing.getStarted')}</h2>
           <div className="start-steps">
-            <article><FileSearch size={22}/><h3>{t('landing.chooseCase')}</h3><p>{t('landing.chooseCaseDescription')}</p></article>
-            <article><Upload size={22}/><h3>{t('landing.addEvidence')}</h3><p>{t('landing.addEvidenceDescription')}</p></article>
-            <article><FileCheck2 size={22}/><h3>{t('landing.reviewFindings')}</h3><p>{t('landing.reviewFindingsDescription')}</p></article>
+            <article><FileSearch size={22}/><h3>{t('landing.chooseCase')}</h3></article>
+            <article><Upload size={22}/><h3>{t('landing.addEvidence')}</h3></article>
+            <article><FileCheck2 size={22}/><h3>{t('landing.reviewFindings')}</h3></article>
           </div>
           <div className="forensic-actions"><button onClick={onPersonal}>{t('landing.checkSuspiciousFile')}<ArrowRight size={16}/></button><button onClick={onAnalyse}>{t('landing.openWorkspace')}<ArrowRight size={16}/></button></div>
         </div>
       </section>
 
       <section className="environment-section section-band" id="environment"><div className="landing-container">
-        <div className="section-heading"><div><span className="overline">{t('THE INVESTIGATION ENVIRONMENT')}</span><h2>{t('Media evidence now sits inside the crime scene.')}</h2></div><p>{t('From a voice note in a payment fraud to a forwarded clip in a public-order investigation, the central question is no longer only what a file shows—but what the evidence can support.')}</p></div>
+        <div className="section-heading"><div><span className="overline">{t('THE INVESTIGATION ENVIRONMENT')}</span><h2>{t('Media evidence now sits inside the crime scene.')}</h2></div></div>
         <div className="environment-grid">{environment.map(item=><article key={item.number}>
-          <div className="card-head"><span>{item.number}</span><small>{t(item.tag)}</small></div><h3>{t(item.title)}</h3><p>{t(item.description)}</p>
+          <div className="card-head"><span>{item.number}</span><small>{t(item.tag)}</small></div><h3>{t(item.title)}</h3>
           <a href={item.url} target="_blank" rel="noreferrer"><span>{t('VERIFIED HEADLINE')}</span><strong>{item.headline}</strong><small>{item.source} · {item.date}<ExternalLink size={12}/></small></a>
         </article>)}</div>
       </div></section>
@@ -186,17 +186,17 @@ export default function Landing({onAnalyse,onReport,onPersonal}:LandingProps){
       </div></section>
 
       <section className="capabilities-section section-band" id="capabilities"><div className="landing-container">
-        <div className="section-heading"><div><span className="overline">{t('CAPABILITIES')}</span><h2>{t('Five connected forensic modules.')}</h2></div><p>{t('Independent result channels converge in one case workspace without collapsing uncertainty into a single “real or fake” label.')}</p></div>
-        <div className="capability-grid">{capabilities.map(item=><article key={item.n}><span className="cap-number">{item.n}</span><item.icon size={24}/><h3>{t(item.title)}</h3><p>{t(item.text)}</p><span className="cap-status">{t('BOUNDED / EXPLAINABLE')}</span></article>)}</div>
+        <div className="section-heading"><div><span className="overline">{t('CAPABILITIES')}</span><h2>{t('Five connected forensic modules.')}</h2></div></div>
+        <div className="capability-grid">{capabilities.map(item=><article key={item.n}><span className="cap-number">{item.n}</span><item.icon size={24}/><h3>{t(item.title)}</h3><p>{t(item.text)}</p></article>)}</div>
       </div></section>
 
       <section className="workflow-section" id="workflow"><div className="landing-container">
-        <div className="section-heading"><div><span className="overline">{t('HOW IT WORKS')}</span><h2>{t('One evidentiary thread, end to end.')}</h2></div><p>{t('Structured identifiers and saved records carry context from intake through review and export.')}</p></div>
+        <div className="section-heading"><div><span className="overline">{t('HOW IT WORKS')}</span><h2>{t('One evidentiary thread, end to end.')}</h2></div></div>
         <ol className="pipeline">{pipeline.map((step,i)=><li key={step.title}><span className="step-number">{String(i+1).padStart(2,'0')}</span><step.icon size={22}/><h3>{t(step.title)}</h3><code>{step.code}</code>{i<pipeline.length-1&&<ChevronRight className="pipeline-arrow"/>}</li>)}</ol>
       </div></section>
 
       <section className="product-preview section-band" id="preview"><div className="landing-container">
-        <div className="section-heading"><div><span className="overline">{t('PRODUCT PREVIEW')}</span><h2>{t('The evidence, finding and basis—kept in view.')}</h2></div><p>{t('A three-pane review workspace links the selected media region to its method, score semantics, custody events and provenance relationships.')}</p></div>
+        <div className="section-heading"><div><span className="overline">{t('PRODUCT PREVIEW')}</span><h2>{t('The evidence, finding and basis—kept in view.')}</h2></div></div>
         <DashboardPreview/>
         <div className="screen-index"><span>{t('CONNECTED SCREENS')}</span>{['Evidence upload + case creation','Analysis dashboard','Explainability view','Provenance graph','Report generator + export'].map(x=><button key={x} onClick={onAnalyse}>{t(x)}<ArrowRight size={12}/></button>)}</div>
       </div></section>

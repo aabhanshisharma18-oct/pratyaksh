@@ -33,22 +33,22 @@ export function CaseBriefingPanel({caseId,recordsVersion,enabled}:Props){
  }
  function links(ids:string[]){return <div className="case-briefing-links">{[...new Set(ids)].map(id=>briefing?.sources.find(source=>source.source_id===id)).filter((source):source is BriefingSource=>Boolean(source)).map(citation)}</div>}
  return <section className="case-briefing panel" aria-labelledby="case-briefing-title" aria-busy={busy}>
-  <header><div><span className="eyebrow"><Sparkles size={14}/> CASE BRIEFING</span><h2 id="case-briefing-title">Explain this case</h2><p>What did we find? How do we know? Where should you look next?</p></div>
+  <header><div><span className="eyebrow"><Sparkles size={14}/> CASE BRIEFING</span><h2 id="case-briefing-title">Explain this case</h2></div>
    <button type="button" className="button primary" disabled={!enabled||busy} onClick={()=>void explain()}>{busy?<Loader2 size={16} className="spin"/>:<BookOpen size={16}/>} {busy?'Preparing briefing…':briefing?'Explain this case again':'Explain this case'}</button>
   </header>
-  <p className="case-briefing-disclosure">Sends recorded finding text, methods, limitations and evidence IDs to Prune and its AI provider. Raw media, filenames and extracted metadata stay local. AI-generated explanation—review required.</p>
+  <p className="case-briefing-disclosure">Shares findings, methods, limitations and evidence IDs with Prune and its AI provider. Media, filenames and extracted metadata stay local. Review the AI draft.</p>
   {!enabled&&<p className="case-briefing-muted">Connect the case backend to generate a briefing from saved examination records.</p>}
-  <div role="status" aria-live="polite">{busy&&<p>Reading the saved case records and preparing a cited explanation…</p>}{stale&&<p className="case-briefing-warning">Case records changed. Generate a new briefing before relying on this explanation.</p>}</div>
+  <div role="status" aria-live="polite">{busy&&<p>Preparing briefing…</p>}{stale&&<p className="case-briefing-warning">Findings changed. Regenerate the briefing.</p>}</div>
   {error&&<p role="alert" className="case-briefing-warning">{error}</p>}
   {briefing&&!stale&&<>
    <div className="case-briefing-sections">{([
-    ['Key findings','What did we find?',briefing.key_findings],
-    ['Open questions','What remains uncertain?',briefing.open_questions],
-    ['Suggested next steps','Where should I look next?',briefing.next_steps],
-   ] as const).map(([heading,subtitle,items],index)=><section key={heading}>
-    <span className="case-briefing-number">0{index+1}</span><h3>{heading}</h3><p className="case-briefing-muted">{subtitle}</p>
+    ['Key findings',briefing.key_findings],
+    ['Open questions',briefing.open_questions],
+    ['Suggested next steps',briefing.next_steps],
+   ] as const).map(([heading,items],index)=><section key={heading}>
+    <span className="case-briefing-number">0{index+1}</span><h3>{heading}</h3>
     {heading==='Open questions'&&briefing.cautions.length>0&&<details className="case-briefing-cautions" open><summary>Recorded cautions ({briefing.cautions.length})</summary>{briefing.cautions.map((notice,i)=><div key={i}><p>{notice.text}</p>{links(notice.source_ids)}</div>)}</details>}
-    <ul>{items.map((item,i)=><li key={i}><p>{item.text}</p><p className="case-briefing-basis"><strong>Recorded support:</strong> {item.basis}</p>{links(item.source_ids)}</li>)}</ul>
+    <ul>{items.map((item,i)=><li key={i}><p>{item.text}</p><details><summary>Supporting record</summary><p>{item.basis}</p></details>{links(item.source_ids)}</li>)}</ul>
    </section>)}</div>
    <details className="case-briefing-records"><summary>Inspect the cited records and their limitations</summary>{briefing.sources.filter(source=>[...briefing.key_findings,...briefing.open_questions,...briefing.next_steps,...briefing.cautions].some(item=>item.source_ids.includes(source.source_id))).map(source=><article key={source.source_id}><strong>{source.source_id} · {source.evidence_ids.join(' ↔ ')}</strong><p>{source.observation}</p><p>{source.method||source.kind} · {source.execution_status} · {source.result||'No conclusion recorded'}</p><ul>{source.limitations.map((limit,i)=><li key={i}>{limit}</li>)}</ul>{citation(source)}</article>)}</details>
    <footer>Based on saved records · {new Date(briefing.generated_at).toLocaleString()} · {briefing.cached?'Reused unchanged case briefing':'Generated via Prune'} · {briefing.model}<br/>This briefing does not establish authenticity, identity or editing order.</footer>
